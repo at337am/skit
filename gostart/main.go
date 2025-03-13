@@ -85,6 +85,10 @@ videos/
 *.Aac
 *.AAC
 
+*.m4a
+*.M4a
+*.M4A
+
 *.wav
 *.Wav
 *.WAV
