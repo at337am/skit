@@ -7,7 +7,7 @@
 ```bash
 aout -v 01.mp4
 
-aout -d . -f mp3
+aout -d . -e mp3
 ```
 
 ##### `clipvid` 视频切割

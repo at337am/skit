@@ -158,16 +158,16 @@ func customUsage() {
 	fmt.Printf(`aout - 从视频文件提取音频，支持单个文件或整个目录
 
 用法:
-  aout (-v <视频路径> | -d <目录路径>) [-f <音频输出格式>]
+  aout (-v <视频路径> | -d <目录路径>) [-e <音频输出格式>]
 
 选项:
   -v <视频路径>   指定单个视频文件进行音频提取（与 -d 互斥）
   -d <目录路径>   指定目录，对目录下所有视频文件提取音频（与 -v 互斥）
-  -f <音频格式>   [可选] 指定音频输出格式（如 mp3, aac, flac），默认保持原始格式
+  -e <音频格式>   [可选] 指定音频输出格式（如 mp3, aac, flac），默认保持原始格式
 
 示例:
   aout -v 01.mp4
-  aout -d . -f mp3
+  aout -d . -e mp3
 `)
 }
 
@@ -177,7 +177,7 @@ func main() {
 	// 解析命令行参数
 	videoPath := flag.String("v", "", "指定单个视频文件路径")
 	dirPath := flag.String("d", "", "指定目录路径")
-	format := flag.String("f", "", "指定音频输出格式")
+	format := flag.String("e", "", "指定音频输出格式")
 	flag.Parse()
 
 	// 检查参数
