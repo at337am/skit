@@ -54,6 +54,7 @@ data/
 tmp/
 images/
 videos/
+fonts/
 
 # archive compressed
 *.zip
