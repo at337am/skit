@@ -16,7 +16,7 @@ import (
 
 const (
 	outputVid = "output.mp4" // 生成的视频文件
-	duration = 0.85 // 每张图片显示的时间（秒）
+	duration = 0.6 // 每张图片显示的时间（秒）
 	targetHeight = 2160 // 统一的高度
 )
 
