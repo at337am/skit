@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	videoPath := flag.String("v", "", "指定视频文件路径")
+	videoPath := flag.String("i", "", "指定视频文件路径")
 	audioPath := flag.String("a", "", "指定音频文件路径")
 	flag.Parse()
 
 	if *videoPath == "" || *audioPath == "" {
 		fmt.Println("❌ 视频路径和音频路径都是必需的")
-		fmt.Println("💡 repaudio -v vid.mp4 -a audio.mp3")
+		fmt.Println("💡 repaudio -i vid.mp4 -a audio.mp3")
 		return
 	}
 
