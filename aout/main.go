@@ -182,12 +182,12 @@ func main() {
 
 	// 检查参数
 	if *videoPath == "" && *dirPath == "" {
-		fmt.Println("错误: 必须指定 -v (视频路径) 或 -d (目录路径) 参数")
+		fmt.Println("错误: 必须指定 -i (视频路径) 或 -d (目录路径) 参数")
 		os.Exit(1)
 	}
 
 	if *videoPath != "" && *dirPath != "" {
-		fmt.Println("错误: -v 和 -d 参数不能同时使用，请选择其中一个")
+		fmt.Println("错误: -i 和 -d 参数不能同时使用，请选择其中一个")
 		os.Exit(1)
 	}
 
