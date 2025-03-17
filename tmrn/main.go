@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -89,12 +90,24 @@ func main() {
 		return files[i].ModTime.Before(files[j].ModTime)
 	})
 
+	// 根据文件数量确定格式化模板
+	numFiles := len(files)
+	var formatTemplate string
+	
+	if numFiles <= 9 {
+		formatTemplate = "%d"
+	} else {
+		// 计算需要的位数
+		digits := int(math.Log10(float64(numFiles))) + 1
+		formatTemplate = "%0" + fmt.Sprintf("%dd", digits)
+	}
+
 	// 创建一个跟踪已使用文件名的映射
 	usedNames := make(map[string]bool)
 
 	// 批量重命名文件
 	for i, file := range files {
-		baseNewName := fmt.Sprintf("%03d%s", i+1, file.Ext)
+		baseNewName := fmt.Sprintf(formatTemplate, i+1) + file.Ext
 		newName := baseNewName
 		newPath := filepath.Join(*dirPath, newName)
 		
@@ -110,7 +123,7 @@ func main() {
 			_, fileExists := os.Stat(newPath)
 			if (fileExists == nil || usedNames[newName]) && filepath.Base(file.Path) != newName {
 				// 生成新的文件名，添加后缀
-				baseName := fmt.Sprintf("%03d_%d", i+1, counter)
+				baseName := fmt.Sprintf(formatTemplate+"_%d", i+1, counter)
 				newName = baseName + file.Ext
 				newPath = filepath.Join(*dirPath, newName)
 				counter++
