@@ -110,7 +110,7 @@ func main() {
 			_, fileExists := os.Stat(newPath)
 			if (fileExists == nil || usedNames[newName]) && filepath.Base(file.Path) != newName {
 				// 生成新的文件名，添加后缀
-				baseName := fmt.Sprintf("%02d_%d", i+1, counter)
+				baseName := fmt.Sprintf("%03d_%d", i+1, counter)
 				newName = baseName + file.Ext
 				newPath = filepath.Join(*dirPath, newName)
 				counter++
