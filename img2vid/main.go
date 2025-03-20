@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -19,6 +20,24 @@ const (
 	duration = 0.6 // 每张图片显示的时间（秒）
 	targetHeight = 2160 // 统一的高度
 )
+
+// 判断文件是否是支持的图片格式
+func isSupportedImageFormat(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	return ext == ".png" || ext == ".jpg" || ext == ".jpeg"
+}
+
+// 从文件名中提取数字部分用于排序
+func extractNumber(filename string) int {
+	base := filepath.Base(filename)
+	ext := filepath.Ext(base)
+	numStr := base[:len(base)-len(ext)]
+	num, err := strconv.Atoi(numStr)
+	if err != nil {
+		return 0
+	}
+	return num
+}
 
 func getMaxWidthAndResize(images []string, imageDir string) (int, error) {
 	maxWidth := 0
@@ -42,8 +61,7 @@ func getMaxWidthAndResize(images []string, imageDir string) (int, error) {
 }
 
 func main() {
-
-	imageDir := flag.String("d", "", "PNG 图片所在的目录")
+	imageDir := flag.String("d", "", "图片所在的目录")
 	output := flag.String("o", outputVid, "输出视频文件名")
 	durationFlag := flag.Float64("s", duration, "每张图片显示的时间（秒）")
 	height := flag.Int("height", targetHeight, "输出视频高度")
@@ -51,7 +69,7 @@ func main() {
 	flag.Parse()
 
 	if *imageDir == "" {
-		fmt.Println("❌ 必须指定 PNG 图片所在的目录 (-d 参数)!")
+		fmt.Println("❌ 必须指定图片所在的目录 (-d 参数)!")
 		fmt.Println("💡 用法: go run main.go -d images")
 		return
 	}
@@ -64,20 +82,18 @@ func main() {
 	
 	var images []string
 	for _, file := range files {
-		if !file.IsDir() && len(file.Name()) > 4 && file.Name()[len(file.Name())-4:] == ".png" {
+		if !file.IsDir() && isSupportedImageFormat(file.Name()) {
 			images = append(images, file.Name())
 		}
 	}
 	
 	if len(images) == 0 {
-		fmt.Println("未找到 PNG 图片")
+		fmt.Println("未找到支持的图片格式 (PNG/JPG)")
 		return
 	}
 	
 	sort.Slice(images, func(i, j int) bool {
-		ni, _ := strconv.Atoi(images[i][:len(images[i])-4])
-		nj, _ := strconv.Atoi(images[j][:len(images[j])-4])
-		return ni < nj
+		return extractNumber(images[i]) < extractNumber(images[j])
 	})
 	
 	maxWidth, err := getMaxWidthAndResize(images, *imageDir)
