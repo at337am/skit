@@ -35,24 +35,52 @@ func renameMP4Extension(directory string) {
 
 // deleteMovFiles 删除目录及其子目录中的所有 .mov 或 .MOV 文件
 func deleteMovFiles(directory string) {
-	filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// 检查是否为 .mov 或 .MOV 结尾的文件（忽略大小写）
-		if !info.IsDir() && strings.HasSuffix(strings.ToLower(path), ".mov") {
-			// 删除文件
-			if err := os.Remove(path); err != nil {
-				fmt.Printf("❌ 删除失败: %s, 错误: %v\n", path, err)
-				return nil
-			}
-
-			fmt.Printf("🆑 删除: %s\n", path)
-		}
-
-		return nil
-	})
+    // 先收集所有 .mov 文件
+    var movFiles []string
+    
+    filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        
+        // 检查是否为 .mov 或 .MOV 结尾的文件（忽略大小写）
+        if !info.IsDir() && strings.HasSuffix(strings.ToLower(path), ".mov") {
+            movFiles = append(movFiles, path)
+        }
+        
+        return nil
+    })
+    
+    // 如果没有找到任何 .mov 文件，直接返回
+    if len(movFiles) == 0 {
+        fmt.Println("没有找到 .mov 文件")
+        return
+    }
+    
+    // 显示找到的所有 .mov 文件
+    fmt.Printf("找到 %d 个 .mov 文件:\n", len(movFiles))
+    for _, file := range movFiles {
+        fmt.Println("  " + file)
+    }
+    
+    // 要求用户确认是否删除
+    fmt.Print("\n是否删除以上所有 .mov 文件? (yes/no): ")
+    var response string
+    fmt.Scanln(&response)
+    
+    response = strings.ToLower(response)
+    if response == "yes" || response == "y" {
+        // 用户确认，执行删除操作
+        for _, path := range movFiles {
+            if err := os.Remove(path); err != nil {
+                fmt.Printf("❌ 删除失败: %s, 错误: %v\n", path, err)
+            } else {
+                fmt.Printf("🆑 删除: %s\n", path)
+            }
+        }
+    } else {
+        fmt.Println("操作已取消，未删除任何文件")
+    }
 }
 
 // processDirectory 处理指定目录，执行所有文件处理步骤
