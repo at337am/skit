@@ -75,7 +75,7 @@ sites:
 repaudio -v 01.mp4 -a 02.mp3
 ```
 
-##### `tmrn` 依据文件修改时间顺序格式化 filename 为 `%02d`, (默认从晚到早, -r: 从早到晚)
+##### `tmrn` 依据文件修改时间顺序格式化 filename 为 `%02d`, (默认从早到晚, -r: 从晚到早)
 
 ```bash
 tmrn -d .
