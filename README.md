@@ -75,12 +75,12 @@ sites:
 repaudio -v 01.mp4 -a 02.mp3
 ```
 
-##### `tmrn` 格式化 filename 为 %02d
+##### `tmrn` 依据文件修改时间顺序格式化 filename 为 `%02d`, (默认从晚到早, -r: 从早到晚)
 
 ```bash
 tmrn -d .
 
-tmrn -d . -e png
+tmrn -d . -e png -r
 ```
 
 ##### `vcat` 横向拼接两个视频，并可选择性地添加音频
