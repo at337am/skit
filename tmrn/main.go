@@ -22,7 +22,7 @@ func main() {
 	// 定义命令行参数
 	dirPath := flag.String("d", "", "要处理的目录路径")
 	fileExt := flag.String("e", "", "要处理的文件格式 (例如: .jpg, .txt)")
-	reverseSort := flag.Bool("r", false, "启用从早到晚排序 (默认为从晚到早)")
+	reverseSort := flag.Bool("r", false, "启用从晚到早排序 (默认为从早到晚)")
 
 	// 解析命令行参数
 	flag.Parse()
@@ -89,11 +89,11 @@ func main() {
 	// 依据文件修改时间进行排序
 	sort.Slice(files, func(i, j int) bool {
 		if *reverseSort {
-			// 如果使用 -r 参数，则从早到晚排序（与原来的默认排序相反）
-			return files[i].ModTime.Before(files[j].ModTime)
+			// 如果使用 -r 参数，则从晚到早排序
+			return files[i].ModTime.After(files[j].ModTime)
 		}
-		// 默认从晚到早排序
-		return files[i].ModTime.After(files[j].ModTime)
+		// 默认从早到晚排序
+		return files[i].ModTime.Before(files[j].ModTime)
 	})
 
 	// 根据文件数量确定格式化模板
