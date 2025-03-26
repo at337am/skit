@@ -21,6 +21,54 @@ func customUsage() {
 	fmt.Println("  vid2img -i video.mp4                 # 提取 JPG 格式全部帧到 _all_frames")
 	fmt.Println("  vid2img -i video.mp4 -e png          # 提取 PNG 格式全部帧到 _all_frames")
 	fmt.Println("  vid2img -i video.mp4 -f list.txt     # 根据 list.txt 提取指定帧到 _selected_frames")
+	fmt.Println("----------------------------")
+	fmt.Println("list.txt 格式示例:")
+	fmt.Println("  9")
+	fmt.Println("  20-30")
+	fmt.Println("  101")
+	fmt.Println("  ...")
+}
+
+func parseFrameRange(line string) ([]int, error) {
+	var frames []int
+
+	// 检查是否包含连字符 (-)
+	if strings.Contains(line, "-") {
+		// 解析范围
+		parts := strings.Split(line, "-")
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("无效的帧号范围格式: %s", line)
+		}
+
+		start, err := strconv.Atoi(parts[0])
+		if err != nil {
+			return nil, fmt.Errorf("无效的起始帧号: %s", parts[0])
+		}
+
+		end, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return nil, fmt.Errorf("无效的结束帧号: %s", parts[1])
+		}
+
+		// 检查范围有效性
+		if start > end {
+			return nil, fmt.Errorf("起始帧号不能大于结束帧号: %s", line)
+		}
+
+		// 生成范围内的所有帧号
+		for frame := start; frame <= end; frame++ {
+			frames = append(frames, frame)
+		}
+	} else {
+		// 单个帧号
+		frame, err := strconv.Atoi(line)
+		if err != nil {
+			return nil, fmt.Errorf("无效的帧号: %s", line)
+		}
+		frames = append(frames, frame)
+	}
+
+	return frames, nil
 }
 
 func readFrameList(filename string) ([]int, error) {
@@ -30,21 +78,43 @@ func readFrameList(filename string) ([]int, error) {
 	}
 	defer file.Close()
 
-	var frames []int
+	var allFrames []int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		frame, err := strconv.Atoi(scanner.Text())
-		if err != nil {
-			return nil, fmt.Errorf("无效的帧号: %s", scanner.Text())
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue // 跳过空行
 		}
-		frames = append(frames, frame)
+
+		// 解析每一行的帧号或帧号范围
+		frames, err := parseFrameRange(line)
+		if err != nil {
+			return nil, err
+		}
+
+		allFrames = append(allFrames, frames...)
 	}
 
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
 
-	return frames, nil
+	// 去重和排序
+	allFrames = removeDuplicates(allFrames)
+	return allFrames, nil
+}
+
+// 去重函数
+func removeDuplicates(frames []int) []int {
+	set := make(map[int]bool)
+	var result []int
+	for _, frame := range frames {
+		if !set[frame] {
+			set[frame] = true
+			result = append(result, frame)
+		}
+	}
+	return result
 }
 
 func main() {
