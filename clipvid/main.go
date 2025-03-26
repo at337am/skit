@@ -80,10 +80,10 @@ func clipVideo(inputFile, outputFile, startTime, endTime string) error {
 }
 
 func main() {
-	inputFile := "data/4.mkv"
-	outputFile := "output.mkv"
-	startTime := "00:25:56"
-	endTime := "00:26:00"
+	inputFile := "01.mp4"
+	outputFile := "output.mp4"
+	startTime := "00:00:30"
+	endTime := "00:01:00"
 
 	err := clipVideo(inputFile, outputFile, startTime, endTime)
 	if err != nil {
