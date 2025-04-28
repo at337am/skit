@@ -10,11 +10,11 @@ const cssStyle = `
 body {
     font-family: "JetBrains Mono", "Noto Sans CJK SC", sans-serif;
     line-height: 1.6;
-    color: #141413;
+    color: #131312;
     max-width: 720px;
     margin: 20px auto;
     padding: 0 20px;
-    background-color: #F9F8F4;
+    background-color: #FAF9F5;
     overflow-wrap: break-word;
 }
 h1,
@@ -68,7 +68,7 @@ li {
 }
 code {
     font-family: "JetBrains Mono", monospace;
-    background-color: #FCFBF9;
+    background-color: #FDFCFA;
     padding: 0.2em 0.4em;
     margin: 0;
     font-size: 85%;
@@ -78,7 +78,7 @@ code {
 
 pre {
     font-family: "JetBrains Mono", monospace;
-    background-color: #FCFBF9;
+    background-color: #FDFCFA;
     padding: 16px;
     overflow: visible;
     line-height: 1.45;
@@ -109,7 +109,7 @@ em {
 blockquote {
     padding: 0.5em 1em;
     margin: 0 0 1em 0;
-    border-left: 4px solid #1F1E1D4D;
+    border-left: 4px solid #B7B6B3;
 }
 blockquote p {
     margin-bottom: 0.5em;
@@ -129,8 +129,8 @@ blockquote p:last-child {
     right: 8px;
     padding: 4px 8px;
     font-size: 0.8em;
-    color: #141413;
-    background-color: #F9F8F4;
+    color: #131312;
+    background-color: #FAF9F5;
     border: 1px solid #DDDDDC;
     border-radius: 8px;
     cursor: pointer;
