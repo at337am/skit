@@ -73,6 +73,7 @@ code {
     margin: 0;
     font-size: 85%;
     border-radius: 8px;
+    border: 1px solid #DDDDDC;
     color: #383A42;
 }
 
