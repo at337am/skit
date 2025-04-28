@@ -53,5 +53,5 @@ func main() {
 		log.Fatalf("错误: 写入输出文件 '%s' 失败: %v", outputFilename, err)
 	}
 
-	fmt.Printf("成功将 '%s' 转换为 '%s'\n", inputFilename, outputFilename) // 使用 inputFilename
+	fmt.Printf("🎉 markdown 转换完成：'%s' ➔ '%s'\n", inputFilename, outputFilename)
 }
