@@ -72,7 +72,7 @@ code {
     padding: 0.2em 0.4em;
     margin: 0;
     font-size: 85%;
-    border-radius: 8px;
+    border-radius: 4px;
     border: 1px solid #DDDDDC;
     color: #383A42;
 }
