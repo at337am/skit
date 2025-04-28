@@ -1,4 +1,3 @@
-// internal/converter/converter.go
 package converter
 
 import (

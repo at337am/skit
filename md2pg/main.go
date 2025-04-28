@@ -1,53 +1,48 @@
-// cmd/md2html/main.go
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	// 导入内部包，注意路径是基于你的模块名
 	"md2pg/internal/converter"
 	"md2pg/internal/template"
 )
 
 func main() {
-	// --- 定义命令行参数 ---
-	inputFile := flag.String("i", "", "Input Markdown file (required)")
-	outputFile := flag.String("o", "", "Output HTML file (optional, defaults to <input>.html)")
-	pageTitle := flag.String("title", "Markdown Document", "HTML Page Title")
-	flag.Parse()
-
-	// --- 校验输入参数 ---
-	if *inputFile == "" {
-		fmt.Fprintln(os.Stderr, "错误: 必须提供输入 Markdown 文件名 (-i)")
-		fmt.Fprintf(os.Stderr, "用法: %s -i <markdown_file> [-o <html_file>] [-title <page_title>]\n", os.Args[0])
-		flag.Usage() // 打印用法信息到标准错误
+	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, "错误: 需要提供输入 Markdown 文件")
+		fmt.Fprintf(os.Stderr, "用法: md2pg <input.md>\n")
 		os.Exit(1)
 	}
 
-	// --- 确定输出文件名 ---
-	outputFilename := *outputFile
-	if outputFilename == "" {
-		// 如果未指定输出文件名，则使用输入文件名并更改扩展名为 .html
-		base := strings.TrimSuffix(*inputFile, filepath.Ext(*inputFile))
-		outputFilename = base + ".html"
-	}
+	// --- 获取输入文件名 ---
+	inputFilename := os.Args[1] // 直接从命令行参数获取文件名
+
+	// --- 计算标题和输出文件名 ---
+	baseNameWithExt := filepath.Base(inputFilename)
+	calculatedTitle := strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
+
+	// 输出文件名
+	outputFilename := strings.TrimSuffix(inputFilename, filepath.Ext(inputFilename)) + ".html"
 
 	// --- 读取 Markdown 文件内容 ---
-	mdContent, err := os.ReadFile(*inputFile)
+	mdContent, err := os.ReadFile(inputFilename) // 使用 inputFilename
 	if err != nil {
-		log.Fatalf("错误: 读取输入文件 '%s' 失败: %v", *inputFile, err)
+		// 检查文件是否存在
+		if os.IsNotExist(err) {
+			log.Fatalf("错误: 输入文件 '%s' 不存在或无法访问。", inputFilename)
+		}
+		log.Fatalf("错误: 读取输入文件 '%s' 失败: %v", inputFilename, err) // 使用 inputFilename
 	}
 
 	// --- 使用 converter 包将 Markdown 转换为 HTML 片段 ---
 	htmlFragment := converter.ConvertMarkdownToHTML(mdContent)
 
 	// --- 使用 template 包将 HTML 片段包装进完整的 HTML 页面 ---
-	finalHTML, err := template.GenerateHTMLPage(htmlFragment, *pageTitle)
+	finalHTML, err := template.GenerateHTMLPage(htmlFragment, calculatedTitle)
 	if err != nil {
 		log.Fatalf("错误: 生成最终 HTML 失败: %v", err)
 	}
@@ -58,5 +53,5 @@ func main() {
 		log.Fatalf("错误: 写入输出文件 '%s' 失败: %v", outputFilename, err)
 	}
 
-	fmt.Printf("成功将 '%s' 转换为 '%s'\n", *inputFile, outputFilename)
+	fmt.Printf("成功将 '%s' 转换为 '%s'\n", inputFilename, outputFilename) // 使用 inputFilename
 }
