@@ -1,0 +1,193 @@
+/* 实现点击标题跳转时的平滑滚动效果 */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "JetBrainsMonoNL NFM", "Noto Sans CJK SC", sans-serif;
+    line-height: 1.6;
+    color: #131312;
+    max-width: 720px;
+    margin: 20px auto;
+    padding: 0 20px;
+    background-color: #FAF9F5;
+    overflow-wrap: break-word;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+h1 {
+    font-size: 2em;
+    padding-bottom: 0.3em;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.75em;
+    padding-bottom: 0.3em;
+}
+h3 {
+    font-size: 1.5em;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1.1em;
+}
+h6 {
+    font-size: 1em;
+}
+p {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+a {
+    color: #7B5FA0;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+ul,
+ol {
+    padding-left: 2em;
+}
+li {
+    margin-bottom: 0.3em;
+}
+code {
+    font-family: "JetBrainsMonoNL NFM", monospace;
+    background-color: #FDFCFA;
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    border-radius: 4px;
+    border: 1px solid #DDDDDC;
+    color: #383A42;
+}
+
+pre {
+    font-family: "JetBrainsMonoNL NFM", monospace;
+    background-color: #FDFCFA;
+    padding: 16px;
+    overflow: visible;
+    line-height: 1.45;
+    border-radius: 8px;
+    border: 1px solid #DDDDDC;
+    margin-top: 0;
+    margin-bottom: 0;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+pre code {
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    white-space: pre-wrap;
+    color: #383A42;
+    word-break: break-word;
+}
+strong {
+    font-weight: 600;
+}
+em {
+    font-style: italic;
+}
+blockquote {
+    padding: 0.5em 1em;
+    margin: 0 0 1em 0;
+    border-left: 4px solid #B7B6B3;
+}
+blockquote p {
+    margin-bottom: 0.5em;
+}
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.code-block-wrapper {
+    position: relative;
+    margin-bottom: 1em;
+}
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    color: #131312;
+    background-color: #FAF9F5;
+    border: 1px solid #DDDDDC;
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.copy-button.copied {
+    background-color: #E9E8E3;
+    border-color: #D0D0C8;
+}
+
+/* --- 目录样式 --- */
+#toc-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #FAF9F5;
+    border: 1px solid #DDDDDC;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 0.9em;
+    z-index: 100;
+    display: none;
+}
+
+/* 仅在 1200px 及以上时生效 */
+@media (min-width: 1200px) {
+    #toc-container {
+        display: block;
+    }
+}
+
+#toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#toc-list li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+#toc-list a {
+    color: #131312;
+    text-decoration: none;
+    display: block;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+#toc-list a:hover {
+    background-color: #E9E8E3;
+    text-decoration: none;
+}

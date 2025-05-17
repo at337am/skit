@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <style>
+{{.CSS}}
+    </style>
+</head>
+<body>
+    <div class="markdown-body">
+    <h1 id="title">{{.Title}}</h1>
+{{.Body}}
+    </div>
+
+    <!-- 新增: 目录容器 -->
+    <div id="toc-container">
+        <ul id="toc-list"></ul>
+    </div>
+    <!-- 目录容器结束 -->
+
+    <script>
+    // 在 DOM 加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        const preBlocks = document.querySelectorAll('pre');
+
+        preBlocks.forEach(pre => {
+            const codeElement = pre.querySelector('code');
+            if (!codeElement) {
+                return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            const button = document.createElement('button');
+            button.textContent = '复制';
+            button.className = 'copy-button';
+            wrapper.appendChild(button);
+
+            wrapper.addEventListener('mouseenter', function() {
+                button.style.opacity = '1';
+            });
+
+            wrapper.addEventListener('mouseleave', function() {
+                button.style.opacity = '0';
+                button.classList.remove('copied');
+            });
+
+            button.addEventListener('click', function() {
+                const codeToCopy = codeElement.innerText || codeElement.textContent;
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    button.classList.add('copied');
+                }).catch(err => {
+                    console.error('无法复制文本: ', err);
+                });
+            });
+        });
+
+        // --- 新增: 生成目录的 JavaScript 代码 ---
+        const contentBody = document.querySelector('.markdown-body');
+        const tocList = document.getElementById('toc-list');
+        const headings = contentBody.querySelectorAll('h1, h2, h3'); // 选择标题
+        let headingIndex = 0; // 用于生成唯一ID和判断是否为第一个标题
+
+        if (tocList && headings.length > 0) {
+            headings.forEach(heading => {
+                const level = parseInt(heading.tagName.substring(1));
+                const text = heading.textContent.trim();
+
+                // 为所有扫描到的标题设置ID，即使是主标题，因为它也需要能被链接跳转
+                const id = 'toc-heading-' + headingIndex;
+                heading.id = id;
+
+                // *** 修改点在这里 ***
+                // 检查：是否是 H1 标签，并且是 contentBody 的直接子元素，并且是遇到的第一个标题 (index 0)
+                if (heading.tagName === 'H1' && heading.parentElement === contentBody && headingIndex === 0) {
+                    headingIndex++; // 即使跳过，也要增加索引，确保后续 ID 唯一
+                    return; // 跳过这个标题，不添加到目录列表
+                }
+                // *** 修改点结束 ***
+
+                // 跳过没有文本内容的标题
+                if (!text) {
+                    headingIndex++; // 增加索引
+                    return;
+                }
+
+                // --- 创建 TOC 列表项 (只有非主标题会执行到这里) ---
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#' + id;
+                link.textContent = text;
+                listItem.style.marginLeft = (level - 1) * 1 + 'em';
+                listItem.appendChild(link);
+                tocList.appendChild(listItem);
+                // --- 列表项创建结束 ---
+
+                headingIndex++; // 为下一个标题准备索引
+            });
+        } else if (tocList) {
+            const tocContainer = document.getElementById('toc-container');
+            if (tocContainer) {
+                tocContainer.style.display = 'none';
+            }
+        }
+        // --- 目录生成代码结束 ---
+    });
+    </script>
+</body>
+</html>

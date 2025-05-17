@@ -1,0 +1,22 @@
+default:
+    @just --list
+
+run:
+    @go run main.go
+
+build:
+    @go build -o hello main.go
+    @echo "✅ 构建完成：生成了可执行文件 'hello'"
+
+build-windows:
+    @go build -ldflags="-H windowsgui" -o hello.exe main.go
+    @echo "✅ 构建完成：生成了 'hello.exe'"
+
+pkg: build
+    @mkdir -p hello-server/static/ hello-server/templates/ hello-server/config/
+    @cp -r static/* hello-server/static/
+    @cp -r templates/* hello-server/templates/
+    @cp config/config.yaml hello-server/config/
+    @mv hello hello-server/
+    @echo "✅ 打包完成：./hello-server"
+

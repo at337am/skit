@@ -1,0 +1,12 @@
+file:
+    resultoutputfilename: result_output.txt
+    taskresponsefilename: task_response.json
+    tmpdirname: tmp
+oss:
+    accesskeyid: ""
+    accesskeysecret: ""
+    appkey: ""
+    bucketname: ""
+    region: ""
+settings:
+    language: cn
