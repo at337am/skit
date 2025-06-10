@@ -1,0 +1,125 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::selection {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body {
+    /* 使用一个类似纸张的淡灰色背景 */
+    background-color: #f0f0f0;
+    /* 关键：使用手写风格字体 */
+    font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", Arial, sans-serif;
+    font-weight: 700; /* 使用更粗的字重以匹配手绘图 */
+    color: #333; /* 使用深灰色代替纯黑，更柔和 */
+
+    /* 使用 Flexbox 实现垂直和水平居中 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+/* 
+ * 标题样式
+ */
+h1 {
+    font-size: 4rem; /* 放大标题 */
+    margin-bottom: 2rem; /* 与文件列表拉开距离 */
+    letter-spacing: 0.05em; /* 增加每个字符之间的空隙 */
+}
+
+h1 span {
+    padding-right: 0.2em;
+}
+
+/* 
+ * 加载提示信息的样式
+ */
+.loading,
+.error {
+    font-size: 1.5rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* 
+ * 文件项的样式
+ */
+.file-item {
+    display: flex;
+    justify-content: space-between; /* 将文件名和大小推向两端 */
+    align-items: center;
+
+    width: 600px;
+    max-width: 80vw; /* 在小屏幕上也能良好显示 */
+    padding: 1rem 1.5rem;
+    
+    background-color: #f0f0f0;
+    
+    /* 关键：模拟手绘边框 */
+    border: 3px solid #333;
+    border-radius: 6px;
+
+    /* 链接样式 */
+    text-decoration: none;
+    color: inherit;
+
+    /* 交互动效 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.file-item:hover {
+    /* 鼠标悬停时轻微上移，产生立体感 */
+    transform: translateY(-4px);
+    /* 增加一个轻微的阴影，强化立体感 */
+    box-shadow: 6px 6px 0px #bbb;
+}
+
+/* 
+ * 文件名和文件大小的样式
+ */
+.file-name {
+    font-size: 2rem;
+    /* 确保文本在一行显示，并隐藏溢出内容 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 1.5rem;
+    flex-shrink: 0; /* 不允许文件大小缩小，保持其完整性 */
+    color: #666;
+    margin-left: 1.5rem;
+}
+
+/* 媒体查询：适配手机端 */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #resources.loading {
+        font-size: 1.2rem;
+    }
+
+    .file-item {
+        padding: 0.8rem 1rem;
+    }
+
+    .file-name {
+        font-size: 1.2rem;
+    }
+
+    .file-size {
+        font-size: 0.9rem;
+        margin-left: 1rem;
+    }
+}
