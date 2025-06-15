@@ -1,54 +1,35 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"path/filepath"
-	"rdrop/internal/handler"
-	"rdrop/internal/service"
-	"rdrop/routes"
+	"rdrop/internal/app/handler"
+	"rdrop/internal/app/service"
+	"rdrop/internal/config"
+	"rdrop/internal/router"
 )
 
 func main() {
-	// 1. 定义命令行参数 (只保留 -i 和 -p)
-	filePath := flag.String("i", "", "要共享的单个文件路径。(必需参数)")
-	port := flag.String("p", "1130", "服务器运行的端口。")
-	flag.Parse()
-
-	// 2. 校验参数
-	if *filePath == "" {
-		fmt.Println("错误：-i <文件路径> 是一个必需参数。")
-		fmt.Println("用法: rdrop -i <文件路径> [-p <端口号>]")
-		flag.PrintDefaults()
+	// 1. 加载并校验配置
+	appCfg, err := config.ValidateAndLoadConfig()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		// todo 这里应当提示用户, 使用 -h --help 查看用法
+		config.PrintDefaultsForConfig()
 		os.Exit(1)
 	}
 
-	// 转换为绝对路径
-	absPath, err := filepath.Abs(*filePath)
-	if err != nil {
-		log.Fatalf("获取绝对路径时出错: %v", err)
-	}
+	// 2. 依赖注入和初始化
+	apiService := service.NewAPIService(appCfg)
+	apiHandler := handler.NewAPIHandler(apiService)
+	router := router.SetupRouter(apiHandler)
 
-	// 检查路径是否存在且为文件
-	info, err := os.Stat(absPath)
-	if os.IsNotExist(err) {
-		log.Fatalf("错误：文件不存在: %s", absPath)
-	}
-	if info.IsDir() {
-		log.Fatalf("错误：-i 参数提供的路径是一个目录，请输入一个文件路径: %s", absPath)
-	}
-
-	// 3. 依赖注入和初始化
-	fileService := service.NewFileService(absPath)
-	fileHandler := handler.NewFileHandler(fileService)
-	router := routes.SetupRouter(fileHandler)
-
-	// 4. 启动服务并打印访问地址
-	addr := ":" + *port
-	printServerInfo(filepath.Base(absPath), *port) // 打印文件名，而不是完整路径
+	// 3. 启动服务并打印访问地址
+	addr := ":" + appCfg.Port
+	printServerInfo(filepath.Base(appCfg.SharedFileAbsPath), appCfg.Port)
 	if err := router.Run(addr); err != nil {
 		log.Fatalf("启动服务器失败: %v", err)
 	}

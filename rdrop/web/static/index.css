@@ -1,0 +1,140 @@
+html {
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* 选中文本时 */
+::selection {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body {
+    font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", Arial,
+        sans-serif;
+    font-weight: 700;
+    color: #333;
+
+    background-color: #f0f0f0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* 标题 */
+h1 {
+    font-size: 4rem;
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+h1 span {
+    padding-right: 0.2em;
+}
+
+/* 隐藏元素 */
+.is-hidden {
+    display: none;
+}
+
+/* 提示信息 */
+#prompt {
+    font-size: 1.5rem;
+    color: #ff8282;
+    max-width: 80vw;
+}
+
+/* 报错提示 */
+#prompt.error {
+    color: #ff6363;
+}
+
+/* 文件项目 */
+.file-item {
+    display: flex;
+    align-items: center;
+
+    padding: 1rem 1.5rem;
+    max-width: 80vw;
+
+    border: 3px solid #333;
+    border-radius: 6px;
+
+    text-decoration: none;
+    color: inherit;
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.file-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0px #bbb;
+}
+
+/* 文件名称 */
+.file-name {
+    font-size: 2rem;
+    /* 确保文本在一行显示，并隐藏溢出内容 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 文件大小 */
+.file-size {
+    font-size: 1.5rem;
+    margin-left: 1em;
+
+    flex-shrink: 0;
+    color: #666;
+    font-style: italic;
+}
+
+/* 消息区域 */
+#description-message {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    max-width: 80vw;
+
+    /* 单词强制换行 */
+    overflow-wrap: break-word;
+}
+
+/* 纯文本区域 */
+#snippet-content {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    max-width: 80vw;
+
+    padding: 1rem;
+
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    overflow: hidden;
+
+    border-left: 4px solid #333;
+    background-color: #e8e8e8;
+}
+
+/* 缩小到原来的 0.8 倍 */
+@media (max-width: 768px) {
+    html {
+        font-size: 12.8px;
+    }
+}

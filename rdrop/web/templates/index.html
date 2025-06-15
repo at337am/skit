@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rain drop</title>
+    <link rel="icon" href="/static/static/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/static/index.css">
+    <script src="/static/static/index.js" defer></script>
+</head>
+<body>
+    <h1><span>✿</span><span>rain</span>drop</h1>
+    <p id="prompt">just a moment...</p>
+    <p id="description-message" class="is-hidden"></p>
+    <pre id="snippet-content" class="is-hidden"></pre>
+    <div id="shareable-file-card" class="is-hidden"></div>
+    <template id="file-item-template">
+        <a href="/api/download" class="file-item">
+            <span class="file-name"></span>
+            <span class="file-size"></span>
+        </a>
+    </template>
+</body>
+</html>
