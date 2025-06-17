@@ -11,7 +11,7 @@ func AccessLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 判断请求的路径
 		if c.Request.URL.Path == "/api/info" {
-			log.Printf("Session started -> %s\n", c.ClientIP())
+			log.Printf("会话建立 -> %s\n", c.ClientIP())
 		}
 
 		c.Next()

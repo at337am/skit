@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -10,15 +9,15 @@ import (
 	"rdrop/internal/app/service"
 	"rdrop/internal/config"
 	"rdrop/internal/router"
+	"rdrop/pkg/fmtutil"
 )
 
 func main() {
 	// 1. 加载并校验配置
 	appCfg, err := config.ValidateAndLoadConfig()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		// todo 这里应当提示用户, 使用 -h --help 查看用法
-		config.PrintDefaultsForConfig()
+		fmtutil.PrintError(fmt.Sprint(err))
+		fmt.Println("使用 -h --help 查看用法")
 		os.Exit(1)
 	}
 
@@ -31,16 +30,17 @@ func main() {
 	addr := ":" + appCfg.Port
 	printServerInfo(filepath.Base(appCfg.SharedFileAbsPath), appCfg.Port)
 	if err := router.Run(addr); err != nil {
-		log.Fatalf("启动服务器失败: %v", err)
+		fmtutil.PrintError(fmt.Sprintf("启动服务器失败: %v", err))
+		os.Exit(1)
 	}
 }
 
 // printServerInfo 打印服务器信息，包括局域网 IP
 func printServerInfo(filename, port string) {
-	fmt.Println("[raindrop] Starting file share server...")
-	fmt.Printf("[raindrop] Sharing file: %s\n", filename)
-	fmt.Println("[raindrop] Access URLs:")
-	fmt.Printf("  -> Local:   http://127.0.0.1:%s\n", port)
+	fmtutil.PrintInfo("[rdrop] Starting file share server...")
+	fmtutil.PrintInfo(fmt.Sprintf("[rdrop] Sharing file: %s", filename))
+	fmtutil.PrintInfo("[rdrop] Access URLs:")
+	fmtutil.PrintInfo(fmt.Sprintf("   Local:   http://127.0.0.1:%s", port))
 
 	interfaces, err := net.Interfaces()
 	if err != nil {
@@ -62,7 +62,7 @@ func printServerInfo(filename, port string) {
 			}
 			// 过滤掉回环地址和非 IPv4 地址
 			if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
-				fmt.Printf("  -> Network: http://%s:%s\n", ip.String(), port)
+				fmtutil.PrintInfo(fmt.Sprintf("   Network: http://%s:%s", ip.String(), port))
 			}
 		}
 	}

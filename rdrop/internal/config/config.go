@@ -3,8 +3,11 @@ package config
 import (
 	"flag"
 	"fmt"
+	"os"
 	"path/filepath"
-	"rdrop/pkg/fileutils"
+	"rdrop/pkg/fileutil"
+	"rdrop/pkg/fmtutil"
+	"rdrop/web"
 	"strconv"
 )
 
@@ -17,8 +20,18 @@ type AppConfig struct {
 }
 
 // ValidateAndLoadConfig 解析命令行参数并进行校验,
-// 如果校验通过，返回一个 AppConfig 实例；否则返回错误或直接退出
 func ValidateAndLoadConfig() (*AppConfig, error) {
+	flag.Usage = func() {
+		logoContent, err := web.Content.ReadFile("static/tty_logo.txt")
+		if err != nil {
+			fmtutil.PrintError("无法读取嵌入的 logo 文件")
+		} else {
+			fmt.Fprintln(os.Stdout, string(logoContent))
+		}
+		fmt.Println("选项:")
+		flag.PrintDefaults()
+	}
+
 	var (
 		sharedFile  string
 		contentFile string
@@ -48,7 +61,7 @@ func ValidateAndLoadConfig() (*AppConfig, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := fileutils.IsValidFilePath(sharedFileAbsPath); err != nil {
+		if err := fileutil.IsValidFilePath(sharedFileAbsPath); err != nil {
 			return nil, fmt.Errorf("校验 -i 选项参数时出错: %w", err)
 		}
 	}
@@ -60,7 +73,7 @@ func ValidateAndLoadConfig() (*AppConfig, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := fileutils.IsValidFilePath(contentFileAbsPath); err != nil {
+		if err := fileutil.IsValidFilePath(contentFileAbsPath); err != nil {
 			return nil, fmt.Errorf("校验 -I 选项参数时出错: %w", err)
 		}
 	}
@@ -72,10 +85,4 @@ func ValidateAndLoadConfig() (*AppConfig, error) {
 		ContentFileAbsPath: contentFileAbsPath,
 		Port:               port,
 	}, nil
-}
-
-// PrintDefaultsForConfig 是一个辅助函数，用于打印 flag 默认用法
-// 可以在 main 中调用它，而不是直接调用 flag.PrintDefaults()
-func PrintDefaultsForConfig() {
-	flag.PrintDefaults()
 }

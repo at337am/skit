@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"rdrop/internal/config"
-	"rdrop/pkg/fileutils"
+	"rdrop/pkg/fileutil"
 
 	"github.com/dustin/go-humanize"
 )
@@ -45,7 +45,7 @@ func (s *APIService) GetPageInfo() (*PageInfo, error) {
 	// 内容文件中的的内容
 	var content string
 	// 如果内容文件存在且正常, 则读取文件中的内容
-	if err := fileutils.IsValidFilePath(s.cfg.ContentFileAbsPath); err == nil {
+	if err := fileutil.IsValidFilePath(s.cfg.ContentFileAbsPath); err == nil {
 		raw, err := os.ReadFile(s.cfg.ContentFileAbsPath)
 		if err != nil {
 			return nil, fmt.Errorf("读取文件内容时出错: %w", err)
@@ -56,7 +56,7 @@ func (s *APIService) GetPageInfo() (*PageInfo, error) {
 	// 共享文件的文件信息
 	var fileName string
 	var fileSize string
-	if err := fileutils.IsValidFilePath(s.cfg.SharedFileAbsPath); err == nil {
+	if err := fileutil.IsValidFilePath(s.cfg.SharedFileAbsPath); err == nil {
 		info, err := os.Stat(s.cfg.SharedFileAbsPath)
 		if err != nil {
 			return nil, fmt.Errorf("获取文件信息时出错: %w", err)
@@ -80,7 +80,7 @@ func (s *APIService) GetSharedFile() (*SharedFileInfo, error) {
 	filePath := s.cfg.SharedFileAbsPath
 
 	// 检查文件状态是否正常
-	err := fileutils.IsValidFilePath(filePath)
+	err := fileutil.IsValidFilePath(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("获取文件失败: %w", err)
 	}
