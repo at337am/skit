@@ -2,219 +2,89 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"flag"
 	"fmt"
+	"gostart/pkg/logutil"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"unicode"
 )
+
+//go:embed templates/*
+var embeddedFiles embed.FS
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "💡 usage: gostart <projectName>\n")
-		flag.PrintDefaults()
+		fmt.Printf("功能: 在当前路径下生成一个初始项目\n")
+		fmt.Printf("用法: gostart <projectName>\n")
 	}
 	flag.Parse()
 
 	args := flag.Args()
 	if len(args) != 1 {
+		logutil.PrintError("请提供且只提供一个项目名称参数")
 		flag.Usage()
 		os.Exit(1)
 	}
 	projectDir := args[0]
 
-	fmt.Printf("⚙️  项目 [%s] 生成中...\n", projectDir)
+	for _, r := range projectDir {
+		if !unicode.IsLetter(r) && r != '_' {
+			logutil.PrintError("项目名称应当使用字母 (a-z, A-Z) 和下划线 (_)")
+			os.Exit(1)
+		}
+	}
 
+	// 检查路径是否存在, 如果已经存在则提示失败
+	if _, err := os.Stat(projectDir); err == nil {
+		logutil.PrintError("目标目录或文件已存在. 请删除现有内容或选择其他项目名称.")
+		os.Exit(1)
+	} else if !os.IsNotExist(err) {
+		logutil.PrintError(fmt.Sprintf("检查目标路径 [%s] 失败: %v\n", projectDir, err))
+		os.Exit(1)
+	}
+
+	logutil.PrintInfo("正在生成项目...")
+
+	// 创建项目目录
 	if err := os.MkdirAll(projectDir, 0755); err != nil {
-		fmt.Fprintf(os.Stderr, "创建项目目录失败: %v\n", err)
+		logutil.PrintError(fmt.Sprintf("创建项目目录 [%s] 失败: %v", projectDir, err))
 		os.Exit(1)
 	}
 
-	// 创建 .gitignore
-	gitignoreContent := `# https://github.com/github/gitignore/blob/main/Go.gitignore
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+	// 遍历嵌入文件系统中的所有文件和目录
+	if err := fs.WalkDir(embeddedFiles, "templates", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 
-*.test
+		// 构建目标路径，移除 "templates/" 前缀
+		// 例如：templates/main.go -> projectDir/main.go
+		relativePath, _ := filepath.Rel("templates", path)
+		destPath := filepath.Join(projectDir, relativePath)
 
-*.out
-
-go.work
-go.work.sum
-
-.env
-
-# mjj
-
-# directory
-data/
-tmp/
-images/
-videos/
-fonts/
-
-# archive compressed
-*.zip
-*.rar
-*.7z
-
-*.tar
-*.tgz
-*.tar.gz
-*.tar.xz
-*.tar.bz2
-*.tar.zst
-*.tar.lzma
-*.tar.lz
-*.tar.lz4
-
-*.iso
-
-# audio file
-*.mp3
-*.Mp3
-*.MP3
-
-*.flac
-*.Flac
-*.FLAC
-
-*.aac
-*.Aac
-*.AAC
-
-*.m4a
-*.M4a
-*.M4A
-
-*.wav
-*.Wav
-*.WAV
-
-*.wma
-*.Wma
-*.WMA
-
-*.ogg
-*.Ogg
-*.OGG
-
-*.alac
-*.Alac
-*.ALAC
-*.aiff
-*.Aiff
-*.AIFF
-
-# video file
-*.mp4
-*.Mp4
-*.MP4
-
-*.mov
-*.Mov
-*.MOV
-
-*.mkv
-*.Mkv
-*.MKV
-
-*.avi
-*.Avi
-*.AVI
-
-*.webm
-*.WebM
-*.WEBM
-
-# image file
-*.jpg
-*.Jpg
-*.JPG
-
-*.jpeg
-*.Jpeg
-*.JPEG
-
-*.png
-*.Png
-*.PNG
-
-*.bmp
-*.Bmp
-*.BMP
-
-*.tif
-*.Tif
-*.TIF
-
-*.tiff
-*.Tiff
-*.TIFF
-
-*.webp
-*.Webp
-*.WEBP
-
-*.heif
-*.Heif
-*.HEIF
-
-*.heic
-*.Heic
-*.HEIC
-
-*.svg
-*.Svg
-*.SVG
-
-*.raw
-*.Raw
-*.RAW
-
-*.cr2
-*.Cr2
-*.CR2
-
-*.nef
-*.Nef
-*.NEF
-
-*.gif
-*.Gif
-*.GIF
-
-# misc
-.out
-`
-	gitignorePath := filepath.Join(projectDir, ".gitignore")
-	if err := os.WriteFile(gitignorePath, []byte(gitignoreContent), 0644); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ 创建 .gitignore 文件失败: %v\n", err)
+		if d.IsDir() {
+			// 如果是目录，则创建目录
+			if err := os.MkdirAll(destPath, 0755); err != nil {
+				return fmt.Errorf("创建目录 [%s] 失败: %v", destPath, err)
+			}
+		} else {
+			// 如果是文件，则读取内容并写入目标文件
+			content, err := embeddedFiles.ReadFile(path)
+			if err != nil {
+				return fmt.Errorf("读取模板文件 [%s] 失败: %v", path, err)
+			}
+			if err := os.WriteFile(destPath, content, 0644); err != nil {
+				return fmt.Errorf("创建文件 [%s] 失败: %v", destPath, err)
+			}
+		}
+		return nil
+	}); err != nil {
+		logutil.PrintError(fmt.Sprintf("复制模板文件失败: %v", err))
 		os.Exit(1)
-	}
-
-	// 创建 main.go
-	mainGoContent := `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, World!")
-}
-`
-	mainGoPath := filepath.Join(projectDir, "main.go")
-	if err := os.WriteFile(mainGoPath, []byte(mainGoContent), 0644); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ 创建 main.go 文件失败: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 获取项目的绝对路径用于显示
-	absPath, err := filepath.Abs(projectDir)
-	if err != nil {
-		absPath = projectDir // 如果获取绝对路径失败，使用相对路径
 	}
 
 	// 执行 go mod init 命令
@@ -225,16 +95,21 @@ func main() {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ 初始化 go mod 失败: %v\n%s", err, stderr.String())
+		logutil.PrintError(fmt.Sprintf("执行 go mod init %s 失败: %v", projectDir, err))
 		os.Exit(1)
 	}
 
-	fmt.Printf("\n🎉 项目 [%s] 创建成功! 🎉\n", projectDir)
-	fmt.Printf("📂 项目路径: %s\n", absPath)
-	fmt.Printf("📋 项目结构:\n")
-	fmt.Printf("  ├─ 📄 .gitignore\n")
-	fmt.Printf("  ├─ 📄 main.go\n")
-	fmt.Printf("  └─ 📄 go.mod\n")
-	fmt.Printf("\n🚀 开始吧!\n")
+	tidyCmd := exec.Command("go", "mod", "tidy")
+	tidyCmd.Dir = projectDir
+	var tidyStderr bytes.Buffer
+	tidyCmd.Stderr = &tidyStderr
 
+	if err := tidyCmd.Run(); err != nil {
+		logutil.PrintWarning(fmt.Sprintf("执行 go mod tidy 失败: %v\n%s", err, tidyStderr.String()))
+	} else {
+		logutil.PrintInfo("已执行 go mod tidy")
+	}
+
+	// todo, 使用交互选择, 创建不同模板的项目
+	logutil.PrintSuccess(fmt.Sprintf("[%s] 创建成功!", projectDir))
 }
