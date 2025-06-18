@@ -22,6 +22,7 @@ tmp/
 images/
 videos/
 fonts/
+release/
 
 # archive compressed
 *.zip
@@ -134,9 +135,9 @@ fonts/
 *.Heic
 *.HEIC
 
-*.svg
-*.Svg
-*.SVG
+# *.svg
+# *.Svg
+# *.SVG
 
 *.raw
 *.Raw
