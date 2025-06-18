@@ -41,7 +41,7 @@ func ValidateAndLoadConfig() (*AppConfig, error) {
 	flag.StringVar(&sharedFile, "i", "", "要共享的单个文件路径, 可选")
 	flag.StringVar(&contentFile, "I", "", "要作为纯文本发送的文件路径, 可选")
 	flag.StringVar(&message, "m", "", "要发送的消息内容, 可选")
-	flag.StringVar(&port, "p", "1130", "服务器运行的端口, 默认值: 1130")
+	flag.StringVar(&port, "p", "1130", "服务器运行的端口, 可选")
 	flag.Parse()
 
 	// 校验 port。无论来源是默认值还是用户输入，都必须是有效的

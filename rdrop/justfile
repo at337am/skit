@@ -1,0 +1,28 @@
+# just --list
+default:
+    @just --list
+
+EXCLUDES := "--exclude=.git --exclude=.gitignore --exclude=data/ --exclude=todo.md --exclude=release/"
+
+# 清理：删除旧的发布目录
+clean:
+    @echo "正在清理旧的发布包..."
+    /bin/rm -rfv release/
+    @echo "清理完成"
+
+# 构建：将项目文件打包到新的发布目录
+build: clean
+    @echo "正在构建发布包..."
+    mkdir -p release/
+    rsync -av {{EXCLUDES}} . release/
+    @echo "发布包已创建在 'release/' 目录中。"
+    ls -lah release/
+
+# 同步到 skit 项目中
+skit: build
+    @echo "正在同步到 skit ..."
+    /bin/rm -rfv ~/workspace/dev/skit/rdrop
+    @echo "已删除旧的 skit 目录"
+    mkdir -p ~/workspace/dev/skit/rdrop
+    rsync -avh --progress release/* ~/workspace/dev/skit/rdrop/
+    @echo "同步完成"
