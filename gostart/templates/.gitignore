@@ -22,6 +22,7 @@ tmp/
 images/
 videos/
 fonts/
+release/
 
 # archive compressed
 *.zip
