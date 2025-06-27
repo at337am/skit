@@ -23,6 +23,8 @@ images/
 videos/
 fonts/
 release/
+bak/
+backup/
 
 # archive compressed
 *.zip
