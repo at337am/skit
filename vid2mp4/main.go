@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -25,6 +26,8 @@ func processDirectory(directory string) {
 	var count int
 	var mutex sync.Mutex
 
+	var convertedOriginals []string // 存储成功转换的原始文件路径
+
 	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -38,7 +41,12 @@ func processDirectory(directory string) {
 
 			go func(filePath string) {
 				defer wg.Done()
-				convertToMP4(filePath)
+				success, originalPath := convertToMP4(filePath)
+				if success {
+					mutex.Lock()
+					convertedOriginals = append(convertedOriginals, originalPath)
+					mutex.Unlock()
+				}
 			}(path)
 		}
 		return nil
@@ -52,12 +60,12 @@ func processDirectory(directory string) {
 
 	fmt.Printf("\n--- 批量转换为完成 ---\n")
 	fmt.Printf("共处理 %d 个 MOV 文件\n", count)
+
+	promptAndDeleteOriginals(convertedOriginals)
 }
 
 // convertToMP4 将单个文件转换为 MP4 格式
-func convertToMP4(inputPath string) {
-	// fmt.Printf("处理文件: %s\n", inputPath)
-
+func convertToMP4(inputPath string) (bool, string) {
 	// 从输入路径获取文件名（不带扩展名）
 	fileName := filepath.Base(inputPath)
 	fileNameWithoutExt := strings.TrimSuffix(fileName, filepath.Ext(fileName))
@@ -75,7 +83,7 @@ func convertToMP4(inputPath string) {
 	audioCodec, err := getAudioCodec(inputPath)
 	if err != nil {
 		fmt.Printf("❌ 获取音频编码信息失败: %v\n", err)
-		return
+		return false, ""
 	}
 
 	// 根据音频编码决定转码参数
@@ -89,7 +97,6 @@ func convertToMP4(inputPath string) {
 	}
 
 	// 视频流始终直接复制
-	// fmt.Printf("  将直接复制视频流，不进行重新编码\n")
 	videoParams := []string{"-c:v", "copy"}
 
 	// 添加快速启动参数
@@ -107,10 +114,6 @@ func convertToMP4(inputPath string) {
 	// 创建ffmpeg命令
 	cmd := exec.Command("ffmpeg", args...)
 
-	// 将输出重定向到标准错误（只获取错误信息而非所有输出）
-	// cmd.Stdout = nil
-	// cmd.Stderr = os.Stderr
-
 	// 执行命令
 	err = cmd.Run()
 	if err != nil {
@@ -121,7 +124,7 @@ func convertToMP4(inputPath string) {
 		videoCodec, err := getVideoCodec(inputPath)
 		if err != nil {
 			fmt.Printf("❌ 获取视频编码信息失败: %v\n", err)
-			return
+			return false, ""
 		}
 
 		fmt.Printf("  原视频编码: %s\n", videoCodec)
@@ -136,19 +139,18 @@ func convertToMP4(inputPath string) {
 		retryArgs = append(retryArgs, "-y", outputPath)
 
 		retryCmd := exec.Command("ffmpeg", retryArgs...)
-		// retryCmd.Stdout = nil
-		// retryCmd.Stderr = os.Stderr
 
 		err = retryCmd.Run()
 		if err != nil {
 			fmt.Printf("❌ 转换失败: %v\n", err)
-			return
+			return false, ""
 		}
 
 		fmt.Printf("✅ 转换成功: %s (使用了视频重编码) 输出: %s\n", inputPath, outputPath)
-		return
+		return true, inputPath
 	}
 	fmt.Printf("✅ 转换成功: %s (无损复制) 输出: %s\n", inputPath, outputPath)
+	return true, inputPath
 }
 
 // 获取视频的视频编码格式
@@ -197,36 +199,80 @@ func getAudioCodec(filePath string) (string, error) {
 	return codec, nil
 }
 
-func customUsage() {
-	fmt.Println("转换单个视频:")
-	fmt.Println("  vid2mp4 1.mkv")
-	fmt.Println("批量转换所有 mov 格式的视频:")
-	fmt.Println("  vid2mp4 ./")
+func promptAndDeleteOriginals(originalPaths []string) {
+	if len(originalPaths) == 0 {
+		return
+	}
+
+	fmt.Printf("\n是否删除已成功转换为 MP4 的 %d 个原始视频文件? (y/N): ", len(originalPaths))
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(strings.ToLower(input))
+
+	if input == "y" {
+		for _, path := range originalPaths {
+			err := os.Remove(path)
+			if err != nil {
+				fmt.Printf("❌ 删除文件失败 '%s': %v\n", path, err)
+			} else {
+				fmt.Printf("🗑️ 已删除: %s\n", path)
+			}
+		}
+		fmt.Println("所有原始文件删除操作完成。")
+	} else {
+		fmt.Println("👌 未删除原始文件。")
+	}
 }
 
 func main() {
-	flag.Usage = customUsage
+	flag.Usage = func() {
+		fmt.Println("功能: 将视频转换为 MP4 格式")
+		fmt.Println("\n选项:")
+		fmt.Println("  -i <video_path>         转换单个视频")
+		fmt.Println("  -d <directory_path>     批量转换目录下所有 MOV 视频")
+		fmt.Println("\n示例:")
+		fmt.Println("  vid2mp4 -i video.mkv")
+		fmt.Println("  vid2mp4 -d .")
+	}
+
+	var dirPath string
+	var inputPath string
+
+	flag.StringVar(&dirPath, "d", "", "指定要批量转换MOV文件的目录路径")
+	flag.StringVar(&inputPath, "i", "", "指定要转换的单个视频文件路径")
 	flag.Parse()
 
-	if flag.NArg() == 0 {
-		fmt.Println("❌ 请提供要转换的视频文件或目录路径。")
+	// 检查参数组合
+	if dirPath != "" && inputPath != "" {
+		fmt.Println("❌ 错误: 不能同时指定 -d (目录) 和 -i (文件) 选项。")
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	path := flag.Arg(0)
-
-	// 获取路径信息，判断是文件还是目录
-	info, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		fmt.Printf("❌ 路径 '%s' 无效，请输入正确的文件或目录路径。\n", path)
-		return
+	if dirPath == "" && inputPath == "" {
+		fmt.Println("❌ 错误: 请指定 -d (目录) 或 -i (文件) 选项。")
+		flag.Usage()
+		os.Exit(1)
 	}
 
-	// 根据路径类型选择处理方式
-	if info.IsDir() {
-		processDirectory(path)
-	} else {
-		convertToMP4(path)
+	if dirPath != "" {
+		// 处理目录
+		info, err := os.Stat(dirPath)
+		if os.IsNotExist(err) || !info.IsDir() {
+			fmt.Printf("❌ 路径 '%s' 无效或不是一个目录。\n", dirPath)
+			os.Exit(1)
+		}
+		processDirectory(dirPath)
+	} else if inputPath != "" {
+		// 处理单个文件
+		info, err := os.Stat(inputPath)
+		if os.IsNotExist(err) || info.IsDir() { // 确保是文件而不是目录
+			fmt.Printf("❌ 路径 '%s' 无效或不是一个文件。\n", inputPath)
+			os.Exit(1)
+		}
+		success, originalFile := convertToMP4(inputPath)
+		if success {
+			promptAndDeleteOriginals([]string{originalFile})
+		}
 	}
 }
