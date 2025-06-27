@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"math"
@@ -96,10 +97,20 @@ func main() {
 		return files[i].ModTime.Before(files[j].ModTime)
 	})
 
-	// 根据文件数量确定格式化模板
 	numFiles := len(files)
+
+	fmt.Printf("即将对目录 \"%s\" 中的 %d 个文件进行批量重命名操作。\n", *dirPath, numFiles)
+	fmt.Print("是否继续？ (y/N): ")
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	if strings.TrimSpace(strings.ToLower(input)) != "y" {
+		fmt.Println("操作已取消。")
+		return
+	}
+
+	// 根据文件数量确定格式化模板
 	var formatTemplate string
-	
+
 	if numFiles <= 9 {
 		formatTemplate = "%d"
 	} else {
@@ -116,7 +127,7 @@ func main() {
 		baseNewName := fmt.Sprintf(formatTemplate, i+1) + file.Ext
 		newName := baseNewName
 		newPath := filepath.Join(*dirPath, newName)
-		
+
 		// 检查文件名是否已存在，如果存在则添加递增的后缀
 		counter := 1
 		for {
@@ -124,7 +135,7 @@ func main() {
 			if filepath.Base(file.Path) == newName {
 				break
 			}
-			
+
 			// 检查新的文件名是否已经存在或已经被本次操作使用过
 			_, fileExists := os.Stat(newPath)
 			if (fileExists == nil || usedNames[newName]) && filepath.Base(file.Path) != newName {
@@ -138,7 +149,7 @@ func main() {
 				break
 			}
 		}
-		
+
 		// 标记该文件名已被使用
 		usedNames[newName] = true
 
