@@ -244,30 +244,44 @@ func main() {
 
 	// 检查参数组合
 	if dirPath != "" && inputPath != "" {
-		fmt.Println("❌ 错误: 不能同时指定 -d (目录) 和 -i (文件) 选项。")
-		flag.Usage()
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "错误: 不能同时指定 -d 和 -i 选项")
+		os.Exit(2)
 	}
 
 	if dirPath == "" && inputPath == "" {
-		fmt.Println("❌ 错误: 请指定 -d (目录) 或 -i (文件) 选项。")
-		flag.Usage()
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "错误: 请指定 -d 或 -i 选项")
+		os.Exit(2)
 	}
 
 	if dirPath != "" {
 		// 处理目录
 		info, err := os.Stat(dirPath)
-		if os.IsNotExist(err) || !info.IsDir() {
-			fmt.Printf("❌ 路径 '%s' 无效或不是一个目录。\n", dirPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Fprintf(os.Stderr, "错误: 路径 '%s' 不存在\n", dirPath)
+			} else {
+				fmt.Fprintf(os.Stderr, "错误: 无法访问路径 '%s': %v\n", dirPath, err)
+			}
+			os.Exit(1)
+		}
+		if !info.IsDir() {
+			fmt.Fprintf(os.Stderr, "错误: 路径 '%s' 不是一个目录\n", dirPath)
 			os.Exit(1)
 		}
 		processDirectory(dirPath)
 	} else if inputPath != "" {
 		// 处理单个文件
 		info, err := os.Stat(inputPath)
-		if os.IsNotExist(err) || info.IsDir() { // 确保是文件而不是目录
-			fmt.Printf("❌ 路径 '%s' 无效或不是一个文件。\n", inputPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Fprintf(os.Stderr, "错误: 路径 '%s' 不存在\n", inputPath)
+			} else {
+				fmt.Fprintf(os.Stderr, "错误: 无法访问路径 '%s': %v\n", inputPath, err)
+			}
+			os.Exit(1)
+		}
+		if info.IsDir() {
+			fmt.Fprintf(os.Stderr, "错误: 路径 '%s' 不是一个文件\n", inputPath)
 			os.Exit(1)
 		}
 		success, originalFile := convertToMP4(inputPath)
