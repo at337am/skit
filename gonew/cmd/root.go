@@ -22,10 +22,11 @@ func Execute() {
 
 	usageText := `在当前路径下生成一个初始项目
 
-用法: gonew <projectName>`
+用法: gonew <projectName>
+`
 
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, usageText)
+		fmt.Fprint(flag.CommandLine.Output(), usageText)
 	}
 
 	flag.Parse()
