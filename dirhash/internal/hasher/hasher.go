@@ -49,13 +49,13 @@ func GenerateHashMap(rootPath string) (map[string]string, error) {
 				hash, err := hashFile(path)
 				relativePath, relErr := filepath.Rel(rootPath, path)
 				if relErr != nil {
-					results <- result{err: fmt.Errorf("无法获取相对路径 %s: %w", path, relErr)}
+					results <- result{err: fmt.Errorf("无法获取相对路径 '%s': %w", path, relErr)}
 					wg.Done()
 					continue
 				}
 
 				if err != nil {
-					results <- result{err: fmt.Errorf("计算文件哈希失败 %s: %w", path, err)}
+					results <- result{err: fmt.Errorf("计算文件哈希失败 '%s': %w", path, err)}
 					wg.Done()
 					continue
 				}
