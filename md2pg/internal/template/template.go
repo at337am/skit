@@ -8,10 +8,10 @@ import (
 )
 
 //go:embed style.css
-var embeddedCSS string
+var pageCSS string
 
 //go:embed page.html
-var embeddedHTMLTemplate string
+var pageHTML string
 
 // pageData struct remains the same
 type pageData struct {
@@ -23,7 +23,7 @@ type pageData struct {
 // GenerateHTMLPage function now uses the embedded variables
 func GenerateHTMLPage(htmlFragment []byte, title string) ([]byte, error) {
 	// Parse the embedded HTML template string
-	tmpl, err := template.New("page").Parse(embeddedHTMLTemplate)
+	tmpl, err := template.New("page").Parse(pageHTML)
 	if err != nil {
 		return nil, fmt.Errorf("解析嵌入的 HTML 模板失败: %w", err)
 	}
@@ -31,7 +31,7 @@ func GenerateHTMLPage(htmlFragment []byte, title string) ([]byte, error) {
 	data := pageData{
 		Title: title,
 		Body:  template.HTML(htmlFragment),
-		CSS:   template.CSS(embeddedCSS),
+		CSS:   template.CSS(pageCSS),
 	}
 
 	var buffer bytes.Buffer
