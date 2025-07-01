@@ -18,10 +18,11 @@ func Execute() {
 
 	usageText := `比较两个文件或目录的内容是否一致 (SHA-256)
 
-用法: dirhash <路径1> <路径2>`
+用法: dirhash <路径1> <路径2>
+`
 
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, usageText)
+		fmt.Fprint(flag.CommandLine.Output(), usageText)
 	}
 
 	flag.Parse()
