@@ -23,25 +23,24 @@ func Execute() {
 
 	args := flag.Args()
 	if len(args) != 1 {
-		fmtcolor.Error("请提供且只提供一个项目名称参数")
-		flag.Usage()
-		os.Exit(1)
+		fmtcolor.Error(fmt.Errorf("请提供且只提供一个项目名称参数"))
+		os.Exit(2)
 	}
 	projectDir := args[0]
 
 	for _, r := range projectDir {
 		if !unicode.IsLetter(r) && r != '_' {
-			fmtcolor.Error("项目名称应当使用字母 (a-z, A-Z) 和下划线 (_)")
+			fmtcolor.Error(fmt.Errorf("项目名称应当使用字母 (a-z, A-Z) 和下划线 (_)"))
 			os.Exit(1)
 		}
 	}
 
 	// 检查路径是否存在, 如果已经存在则提示失败
 	if _, err := os.Stat(projectDir); err == nil {
-		fmtcolor.Error("目标目录或文件已存在. 请删除现有内容或选择其他项目名称.")
+		fmtcolor.Error(fmt.Errorf("目标目录或文件已存在. 请删除现有内容或选择其他项目名称."))
 		os.Exit(1)
 	} else if !os.IsNotExist(err) {
-		fmtcolor.Error(fmt.Sprintf("检查目标路径 '%s' 失败: %v\n", projectDir, err))
+		fmtcolor.Error(fmt.Errorf("检查目标路径 '%s' 失败: %v\n", projectDir, err))
 		os.Exit(1)
 	}
 
@@ -49,7 +48,7 @@ func Execute() {
 
 	// 创建项目目录
 	if err := os.MkdirAll(projectDir, 0755); err != nil {
-		fmtcolor.Error(fmt.Sprintf("创建项目目录 '%s' 失败: %v", projectDir, err))
+		fmtcolor.Error(fmt.Errorf("创建项目目录 '%s' 失败: %v", projectDir, err))
 		os.Exit(1)
 	}
 
@@ -81,7 +80,7 @@ func Execute() {
 		}
 		return nil
 	}); err != nil {
-		fmtcolor.Error(fmt.Sprintf("复制模板文件失败: %v", err))
+		fmtcolor.Error(err)
 		os.Exit(1)
 	}
 
@@ -93,7 +92,7 @@ func Execute() {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		fmtcolor.Error(fmt.Sprintf("执行 go mod init %s 失败: %v", projectDir, err))
+		fmtcolor.Error(fmt.Errorf("执行 go mod init %s 失败: %v", projectDir, err))
 		os.Exit(1)
 	}
 
