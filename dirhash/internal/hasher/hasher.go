@@ -43,7 +43,7 @@ func GenerateHashMap(rootPath string) (map[string]string, error) {
 	var wg sync.WaitGroup
 
 	// 关键执行逻辑：1. 先启动消费者（worker goroutine），它们会尝试从空的 jobs 通道读取，因此会立即阻塞等待任务。
-	for i := 0; i < numWorkers; i++ {
+	for range numWorkers {
 		go func() {
 			for path := range jobs {
 				hash, err := hashFile(path)
