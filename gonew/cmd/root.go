@@ -39,8 +39,9 @@ func Execute() {
 
 	projectDir := args[0]
 	for _, r := range projectDir {
-		if !unicode.IsLetter(r) && r != '_' {
-			errorColor.Fprintln(os.Stderr, "项目名称应当使用字母 (a-z, A-Z) 和下划线 (_)")
+		// 允许字母, 数字和下划线
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+			errorColor.Fprintln(os.Stderr, "项目名称应当使用字母 (a-z, A-Z), 数字 (0-9) 和下划线 (_)")
 			os.Exit(1)
 		}
 	}
