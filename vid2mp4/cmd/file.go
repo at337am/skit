@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"vid2mp4/internal/converter"
+	"vid2mp4/pkg/util"
 )
 
 // executeFileLogic 处理单个文件的逻辑
@@ -26,7 +27,7 @@ func executeFileLogic(o *rootOptions, conv converter.IConverter) error {
 
 	// ========= 删除逻辑 =========
 
-	if autoRemove || askForConfirmation("是否删除已成功转换的原始文件?") {
+	if autoRemove || util.AskForConfirmation("是否删除已成功转换的原始文件?") {
 		fmt.Printf("\n开始删除原始视频文件...\n")
 
 		if err := os.Remove(filePath); err != nil {

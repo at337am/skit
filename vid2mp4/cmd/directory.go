@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"vid2mp4/internal/processor"
+	"vid2mp4/pkg/util"
 )
 
 // executeDirLogic 处理目录的逻辑
@@ -56,7 +57,7 @@ func executeDirLogic(o *rootOptions, proc processor.IProcessor) error {
 	// ========= 删除逻辑 =========
 
 	if len(result.SuccessJobs) > 0 {
-		if autoRemove || askForConfirmation("是否删除已成功转换的原始文件?") {
+		if autoRemove || util.AskForConfirmation("是否删除已成功转换的原始文件?") {
 			fmt.Printf("\n开始删除原始视频文件...\n")
 
 			deleteStats, err := proc.DeleteOriginalVideo(result)
