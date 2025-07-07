@@ -1,0 +1,7 @@
+default:
+    @rm -rfv data
+    @cp -r bak/data .
+    @echo "已重置 -> data"
+
+cp:
+    fd -e go -x sh -c 'echo "===== {} ====="; cat {}; echo' | wl-copy
