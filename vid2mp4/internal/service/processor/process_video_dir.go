@@ -7,14 +7,17 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"vid2mp4/internal/converter"
+	"vid2mp4/internal/service/converter"
 )
 
-// ProcessResult 存储目录处理过程中的统计信息
-type ProcessResult struct {
-	SuccessJobs  map[string]*converter.ConvertResult // 存储成功的结果结构体
-	FailedJobs   map[string]error                    // 存储失败路径和具体错误
-	AccessErrors map[string]error                    // 存储遍历时访问路径的错误
+type VideoDirProcessor struct {
+	conv converter.Converter // 依赖 IConverter 接口
+}
+
+func NewProcessor(c converter.Converter) Processor {
+	return &VideoDirProcessor{
+		conv: c,
+	}
 }
 
 // 在 goroutine 之间传递, 处理结果
@@ -26,7 +29,7 @@ type processingInfo struct {
 }
 
 // ProcessVideoDir 遍历指定目录及其子目录, 转换所有指定扩展名的文件
-func (p *Processor) ProcessVideoDir(directory, extension, outputDir string) (*ProcessResult, error) {
+func (p *VideoDirProcessor) ProcessVideoDir(directory, extension, outputDir string) (*ProcessResult, error) {
 	stats := &ProcessResult{
 		SuccessJobs:  make(map[string]*converter.ConvertResult),
 		FailedJobs:   make(map[string]error),
@@ -55,7 +58,10 @@ func (p *Processor) ProcessVideoDir(directory, extension, outputDir string) (*Pr
 	}
 
 	// 启动生产者, 负责查找文件
-	go processProducer(jobs, procInfoChan, directory, extension)
+	go func() {
+		defer close(jobs) // 生产者完成工作后, 关闭 jobs 通道
+		processProducer(jobs, procInfoChan, directory, extension)
+	}()
 
 	// 协调者, 等待所有任务完成后关闭 procInfoChan
 	go func() {
@@ -82,7 +88,7 @@ func (p *Processor) ProcessVideoDir(directory, extension, outputDir string) (*Pr
 }
 
 // processWorker 从 jobs 通道接收文件路径, 进行转换, 并将结果发送到 procInfoChan。
-func (p *Processor) processWorker(jobs <-chan string, procInfoChan chan<- processingInfo, outputDir string) {
+func (p *VideoDirProcessor) processWorker(jobs <-chan string, procInfoChan chan<- processingInfo, outputDir string) {
 	for filePath := range jobs {
 		result, err := p.conv.ConvertToMP4(filePath, outputDir)
 		procInfoChan <- processingInfo{
@@ -95,8 +101,6 @@ func (p *Processor) processWorker(jobs <-chan string, procInfoChan chan<- proces
 
 // processProducer 遍历目录, 将找到的指定扩展名文件路径发送到 jobs 通道, 并通过 procInfoChan 报告访问错误
 func processProducer(jobs chan<- string, procInfoChan chan<- processingInfo, directory, extension string) {
-	defer close(jobs) // 生产者完成工作后, 关闭 jobs 通道
-
 	filepath.WalkDir(directory, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			procInfoChan <- processingInfo{vidPath: path, accessError: err}

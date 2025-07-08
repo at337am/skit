@@ -2,18 +2,20 @@ package converter
 
 import (
 	"fmt"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
 )
 
-type ConvertResult struct {
-	OutputPath    string // 最终输出的文件路径
-	StatusMessage string // 描述转换过程中的关键信息, 如音频是否转码
+type MP4Converter struct{}
+
+func NewMP4Converter() Converter {
+	return &MP4Converter{}
 }
 
 // ConvertToMP4 将单个文件转换为 MP4 格式, 成功时返回输出路径
-func (c *Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult, error) {
+func (c *MP4Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult, error) {
 
 	// 从输入路径获取文件名（不带扩展名）
 	fileName := filepath.Base(inputPath)
@@ -105,4 +107,33 @@ func (c *Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult, e
 		OutputPath:    outputPath,
 		StatusMessage: fmt.Sprintf("视频流 -> 已重编码为 H.264\n  └─ %s", audioMessage),
 	}, nil
+}
+
+// executeFFmpeg 辅助函数, 用于执行 ffmpeg 命令, 并返回执行的命令字符串
+func executeFFmpeg(args []string) (string, error) {
+	cmd := exec.Command("ffmpeg", args...)
+	return cmd.String(), cmd.Run()
+}
+
+// getAudioCodec 辅助函数, 用于获取视频的音频编码格式
+func getAudioCodec(filePath string) (string, error) {
+	cmd := exec.Command(
+		"ffprobe",
+		"-v", "error",
+		"-select_streams", "a:0",
+		"-show_entries", "stream=codec_name",
+		"-of", "default=noprint_wrappers=1:nokey=1",
+		filePath,
+	)
+
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	codec := strings.TrimSpace(string(output))
+	if codec == "" {
+		return "", nil
+	}
+	return codec, nil
 }

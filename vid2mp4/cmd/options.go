@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type rootOptions struct {
 	inputPath       string // 待处理路径
 	autoRemove      bool   // 自动删除原始视频文件
-	targetFormats   string // 指定要转换的文件扩展名
+	extension       string // 指定要转换的文件扩展名
 	outputDirectory string // 指定输出目录
 }
 
@@ -36,14 +37,17 @@ func validateOptions(o *rootOptions) (os.FileInfo, error) {
 		dirInfo, err := os.Stat(outputDir)
 		if err != nil {
 			if os.IsNotExist(err) {
-				return nil, fmt.Errorf("指定的输出目录不存在: %s", outputDir)
+				return nil, fmt.Errorf("输出目录 '%s' 不存在", outputDir)
 			}
 			return nil, fmt.Errorf("无法访问输出目录 '%s': %w", outputDir, err)
 		}
 		if !dirInfo.IsDir() {
-			return nil, fmt.Errorf("指定的输出路径不是一个目录: %s", outputDir)
+			return nil, fmt.Errorf("输出路径不是一个目录: %s", outputDir)
 		}
 	}
+
+	// 规范化扩展名: 转为小写, 去除前导'.', 再加上 '.'
+	o.extension = "." + strings.ToLower(strings.TrimPrefix(o.extension, "."))
 
 	return info, nil
 }

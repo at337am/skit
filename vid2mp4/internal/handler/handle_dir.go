@@ -1,30 +1,26 @@
-package cmd
+package handler
 
 import (
 	"fmt"
-	"strings"
-	"vid2mp4/internal/processor"
+	"os"
 	"vid2mp4/pkg/util"
 )
 
-// executeDirLogic 处理目录的逻辑
-func executeDirLogic(o *rootOptions, proc processor.IProcessor) error {
+func (h *AppHandler) handleDirectory(cfg *Config) error {
+	outputDir := cfg.OutputDir
+	directory := cfg.InputPath
+	autoRemove := cfg.AutoRemove
+	extension := cfg.Extension
+
 	fmt.Printf("准备处理目录...\n")
 
-	directory := o.inputPath
-	autoRemove := o.autoRemove
-	// 规范化扩展名: 转为小写, 去除前导'.', 再加上 '.'
-	extension := "." + strings.ToLower(strings.TrimPrefix(o.targetFormats, "."))
-	outputDir := o.outputDirectory
-
 	// 调用执行, 返回的错误是描述性的
-	result, err := proc.ProcessVideoDir(directory, extension, outputDir)
+	result, err := h.proc.ProcessVideoDir(directory, extension, outputDir)
 	if err != nil {
 		fmt.Printf("处理目录时发生错误: %v", err)
 	}
 
 	// ========= 显示结果 =========
-
 	successCount := len(result.SuccessJobs)
 	failedCount := len(result.FailedJobs)
 	accessErrCount := len(result.AccessErrors)
@@ -55,28 +51,17 @@ func executeDirLogic(o *rootOptions, proc processor.IProcessor) error {
 	fmt.Printf("\n处理完毕...\n")
 
 	// ========= 删除逻辑 =========
-
 	if len(result.SuccessJobs) > 0 {
 		if autoRemove || util.AskForConfirmation("是否删除已成功转换的原始文件?") {
-			fmt.Printf("\n开始删除原始视频文件...\n")
-
-			deleteStats, err := proc.DeleteOriginalVideo(result)
-
-			if len(deleteStats.SuccessfullyDeleted) > 0 {
-				for _, path := range deleteStats.SuccessfullyDeleted {
-					warnColor.Printf("已删除 -> %s\n", path)
-				}
-			}
-
-			if err != nil {
-				fmt.Printf("\n删除文件时发生错误: %v\n", err)
-				fmt.Printf("以下文件删除失败:\n")
-				for path, err := range deleteStats.FailedDeletions {
-					fmt.Printf("%s -> %v\n", path, err)
+			for filePath := range result.SuccessJobs {
+				if err := os.Remove(filePath); err != nil {
+					errorColor.Printf("删除失败 -> %s 错误: %v\n", filePath, err)
+				} else {
+					warnColor.Printf("已删除 -> %s\n", filePath)
 				}
 			}
 		} else {
-			fmt.Printf("\n操作取消, 保留所有原始文件\n")
+			warnColor.Printf("\n操作取消, 保留所有原始文件\n")
 		}
 	}
 

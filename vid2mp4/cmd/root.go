@@ -4,18 +4,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"vid2mp4/internal/converter"
-	"vid2mp4/internal/processor"
+	"vid2mp4/internal/handler"
+	"vid2mp4/internal/service/converter"
+	"vid2mp4/internal/service/processor"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 var (
-	successColor = color.New(color.FgGreen)
-	warnColor    = color.New(color.FgCyan)
-	errorColor   = color.New(color.FgRed)
-	opts         = &rootOptions{}
+	opts = &rootOptions{}
 )
 
 func init() {
@@ -30,7 +27,7 @@ func init() {
 	}
 
 	rootCmd.Flags().BoolVarP(&opts.autoRemove, "yes", "y", false, "自动删除转换后的视频文件")
-	rootCmd.Flags().StringVarP(&opts.targetFormats, "extension", "e", "mov", "待转换的视频文件格式")
+	rootCmd.Flags().StringVarP(&opts.extension, "extension", "e", "mov", "待转换的视频文件格式")
 	rootCmd.Flags().StringVarP(&opts.outputDirectory, "output", "o", "", "指定输出目录, 默认与视频路径同级")
 }
 
@@ -49,14 +46,19 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		conv := converter.NewConverter()
+		conv := converter.NewMP4Converter()
+		proc := processor.NewProcessor(conv)
+		hand := handler.NewAppHandler(conv, proc)
 
-		if info.IsDir() {
-			proc := processor.NewProcessor(conv)
-			return executeDirLogic(opts, proc)
-		} else {
-			return executeFileLogic(opts, conv)
+		cfg := &handler.Config{
+			InputPath:   opts.inputPath,
+			AutoRemove:  opts.autoRemove,
+			Extension:   opts.extension,
+			OutputDir:   opts.outputDirectory,
+			IsDirectory: info.IsDir(),
 		}
+
+		return hand.Execute(cfg)
 	},
 }
 
