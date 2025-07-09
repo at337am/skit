@@ -19,7 +19,7 @@ func Execute() {
 func newRootCmd() *cobra.Command {
 
 	// 初始化参数结构体
-	// runner := core.NewRunner()
+	// runner := action.NewRunner()
 
 	var cmd = &cobra.Command{
 		Use:   "wow <file-path>",
@@ -27,13 +27,15 @@ func newRootCmd() *cobra.Command {
 		// Long:          "cli app detailed description",
 		Example: `wow ./file.txt`,
 
-		// SilenceUsage:  true, // 禁止 在出现错误时, 自动打印用法信息 Usage
-		// SilenceErrors: true, // 禁止 cobra 自动打印错误信息, 控制权还给自己
+		// SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
+		// Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
 
-		// Args: cobra.NoArgs,          // 不允许出现位置参数
-		// Args: cobra.ArbitraryArgs,   // 任意数量的位置参数
-		// Args: cobra.MinimumNArgs(1), // 不少于 1 个位置参数
-		// Args: cobra.ExactArgs(1),    // 必须为 1 个位置参数
+		// ========== bak ==========
+		// SilenceErrors: true,                  // 禁止 cobra 自动打印错误信息, 控制权还给自己
+		// Args:          cobra.NoArgs,          // 不允许出现位置参数
+		// Args:          cobra.ArbitraryArgs,   // 任意数量的位置参数
+		// Args:          cobra.MinimumNArgs(1), // 不少于 1 个位置参数
+		// ========== bak ==========
 
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {

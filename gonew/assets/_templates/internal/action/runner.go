@@ -1,23 +1,6 @@
-package core
+package action
 
-import (
-	"fmt"
-
-	"github.com/fatih/color"
-)
-
-var (
-	successColor = color.New(color.FgGreen)
-	warnColor    = color.New(color.FgCyan)
-	errorColor   = color.New(color.FgRed)
-)
-
-type Runner struct {
-	Path    string
-	Message string
-	Port    int
-	Yes     bool
-}
+import "fmt"
 
 // NewRunner 构造函数 (也可以在这里设置参数默认值)
 func NewRunner() *Runner {
@@ -39,6 +22,7 @@ func (r *Runner) Validate() error {
 func (r *Runner) Run() error {
 
 	// 在这里实现核心逻辑
+	funcName()
 
 	return nil
 }
