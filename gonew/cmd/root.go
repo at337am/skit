@@ -64,14 +64,14 @@ func Execute() {
 	}
 
 	// 遍历嵌入文件系统中的所有文件和目录
-	if err := fs.WalkDir(assets.FS, "templates", func(path string, d fs.DirEntry, err error) error {
+	if err := fs.WalkDir(assets.FS, "_templates", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		// 构建目标路径，移除 "templates/" 前缀
-		// 例如：templates/main.go -> projectDir/main.go
-		relativePath, _ := filepath.Rel("templates", path)
+		// 构建目标路径，移除 "_templates/" 前缀
+		// 例如：_templates/main.go -> projectDir/main.go
+		relativePath, _ := filepath.Rel("_templates", path)
 		destPath := filepath.Join(projectDir, relativePath)
 
 		if d.IsDir() {
