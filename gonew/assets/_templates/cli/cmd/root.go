@@ -9,8 +9,17 @@ import (
 
 // Execute 整个程序的入口点
 func Execute() {
+
+	// ========== bak ==========
+	// 程序启动时, 先检查环境
+	// if err := checkEnv(); err != nil {
+	// 	fmt.Fprintf(os.Stderr, "检查环境时出错: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// ========== bak ==========
+
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "for more information, try '--help'\n")
+		fmt.Fprintf(os.Stderr, "\nfor more information, try '--help'\n")
 		os.Exit(1)
 	}
 }
@@ -19,18 +28,18 @@ func Execute() {
 func newRootCmd() *cobra.Command {
 
 	// 初始化参数结构体
-	// runner := action.NewRunner()
+	// runner := cli.NewRunner() // 注释: cli 包名可以替换成具体的命令功能
 
 	var cmd = &cobra.Command{
 		Use:   "wow <file-path>",
 		Short: "cli app short description",
-		// Long:          "cli app detailed description",
-		Example: `wow ./file.txt`,
 
 		// SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
 		// Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
 
 		// ========== bak ==========
+		// Long:          "cli app detailed description",
+		// Example:       `wow ./file.txt`,
 		// SilenceErrors: true,                  // 禁止 cobra 自动打印错误信息, 控制权还给自己
 		// Args:          cobra.NoArgs,          // 不允许出现位置参数
 		// Args:          cobra.ArbitraryArgs,   // 任意数量的位置参数
@@ -68,3 +77,13 @@ func newRootCmd() *cobra.Command {
 
 	return cmd
 }
+
+// ========== bak ==========
+// func checkEnv() error {
+// 	if _, err := exec.LookPath("ffmpeg"); err != nil {
+// 		return errors.New("环境中未找到 ffmpeg")
+// 	}
+
+// 	return nil
+// }
+// ========== bak ==========
