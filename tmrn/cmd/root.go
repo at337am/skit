@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"tmrn/internal/renamer"
+	"tmrn/internal/cli"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +11,7 @@ import (
 // Execute 整个程序的入口点
 func Execute() {
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "for more information, try '--help'\n")
+		fmt.Fprintf(os.Stderr, "\nfor more information, try '--help'\n")
 		os.Exit(1)
 	}
 }
@@ -20,7 +20,7 @@ func Execute() {
 func newRootCmd() *cobra.Command {
 
 	// 初始化参数结构体
-	runner := renamer.NewRunner()
+	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
 		Use:          "tmrn <directory-path>",

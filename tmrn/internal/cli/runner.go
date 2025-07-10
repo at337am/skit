@@ -1,12 +1,18 @@
-package renamer
+package cli
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"tmrn/internal/ui"
 )
+
+// Runner 存储选项参数
+type Runner struct {
+	DirPath     string
+	FileExt     string
+	ReverseSort bool
+}
 
 // NewRunner 构造函数 (也可以在这里设置参数默认值)
 func NewRunner() *Runner {
@@ -54,7 +60,7 @@ func (r *Runner) Run() error {
 	}
 
 	// 2. 向用户确认
-	if !ui.AskForConfirmation("是否重命名 %d 个文件?", len(files)) {
+	if !askForConfirmation("是否重命名 %d 个文件?", len(files)) {
 		warnColor.Printf("操作已取消\n")
 		return nil
 	}
