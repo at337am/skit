@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"gonew/internal/creator"
+	"gonew/internal/cli"
 	"os"
 	"os/exec"
 
@@ -13,13 +13,13 @@ import (
 // Execute 整个程序的入口点
 func Execute() {
 	// 程序启动时, 先检查环境
-	if err := checkGoEnv(); err != nil {
+	if err := checkEnv(); err != nil {
 		fmt.Fprintf(os.Stderr, "检查环境时出错: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "for more information, try '--help'\n")
+		fmt.Fprintf(os.Stderr, "\nfor more information, try '--help'\n")
 		os.Exit(1)
 	}
 }
@@ -28,7 +28,7 @@ func Execute() {
 func newRootCmd() *cobra.Command {
 
 	// 初始化参数结构体
-	runner := creator.NewRunner()
+	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
 		Use:          "gonew <projectName>",
@@ -58,8 +58,8 @@ func newRootCmd() *cobra.Command {
 	return cmd
 }
 
-// checkGoEnv 检查 Go 环境是否存在
-func checkGoEnv() error {
+// checkEnv 检查系统环境
+func checkEnv() error {
 	if _, err := exec.LookPath("go"); err != nil {
 		return errors.New("Go 环境未找到")
 	}
