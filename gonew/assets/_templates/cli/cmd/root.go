@@ -40,15 +40,12 @@ func newRootCmd() *cobra.Command {
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			// 1. 获取位置参数
 			// runner.Path = args[0]
 
-			// 2. 校验参数
 			// if err := runner.Validate(); err != nil {
 			// 	return err
 			// }
 
-			// 3. 执行核心逻辑
 			// if err := runner.Run(); err != nil {
 			// 	return err
 			// }
