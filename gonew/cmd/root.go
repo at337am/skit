@@ -14,7 +14,7 @@ import (
 func Execute() {
 	// 程序启动时, 先检查环境
 	if err := checkGoEnv(); err != nil {
-		fmt.Fprintf(os.Stderr, "检查环境时出错: %v", err)
+		fmt.Fprintf(os.Stderr, "检查环境时出错: %v\n", err)
 		os.Exit(1)
 	}
 
