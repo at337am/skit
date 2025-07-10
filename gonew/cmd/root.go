@@ -33,7 +33,6 @@ func newRootCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:          "gonew <projectName>",
 		Short:        "在当前路径下生成一个初始项目",
-		Example:      `gonew wow`,
 		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
 		Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
 
@@ -54,7 +53,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVarP(&runner.CliTemplate, "cli", "c", false, "使用 cli 项目模板")
+	cmd.Flags().BoolVarP(&runner.CliTemplate, "cli", "c", false, "使用 cli 项目模板 (cobra)")
 
 	return cmd
 }
