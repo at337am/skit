@@ -10,7 +10,7 @@ func (r *Runner) handleFile() error {
 
 	fmt.Printf("准备处理单个视频...\n")
 
-	result, err := r.conv.ConvertToMP4(filePath, r.OutputDirectory)
+	result, err := r.conv.ConvertToMP4(filePath, r.OutputDir)
 	if err != nil {
 		return fmt.Errorf("转换失败, 详情: %w", err)
 	}

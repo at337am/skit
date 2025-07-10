@@ -20,7 +20,7 @@ func Execute() {
 	}
 
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "for more information, try '--help'\n")
+		fmt.Fprintf(os.Stderr, "\nfor more information, try '--help'\n")
 		os.Exit(1)
 	}
 }
@@ -56,7 +56,7 @@ func newRootCmd() *cobra.Command {
 
 	cmd.Flags().BoolVarP(&runner.AutoRemove, "yes", "y", false, "自动删除转换后的视频文件")
 	cmd.Flags().StringVarP(&runner.Extension, "extension", "e", "mov", "待转换的视频文件格式")
-	cmd.Flags().StringVarP(&runner.OutputDirectory, "output", "o", "", "指定输出目录, 默认与视频路径同级")
+	cmd.Flags().StringVarP(&runner.OutputDir, "output", "o", "", "指定输出目录, 默认与视频路径同级")
 
 	return cmd
 }

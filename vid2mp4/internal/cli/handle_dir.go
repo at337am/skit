@@ -143,7 +143,7 @@ func (r *Runner) processDir() (*processResult, error) {
 // processWorker 从 jobs 通道接收文件路径, 进行转换, 并将结果发送到 procInfoChan。
 func (r *Runner) processWorker(jobs <-chan string, procInfoChan chan<- processingInfo) {
 	for filePath := range jobs {
-		result, err := r.conv.ConvertToMP4(filePath, r.OutputDirectory)
+		result, err := r.conv.ConvertToMP4(filePath, r.OutputDir)
 		procInfoChan <- processingInfo{
 			vidPath:       filePath,
 			convertResult: result,
