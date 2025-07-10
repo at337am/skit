@@ -1,19 +1,16 @@
-package handler
+package cli
 
 import (
 	"fmt"
 	"os"
-	"vid2mp4/pkg/util"
 )
 
-func (h *AppHandler) handleFile(cfg *Config) error {
-	outputDir := cfg.OutputDir
-	filePath := cfg.InputPath
-	autoRemove := cfg.AutoRemove
+func (r *Runner) handleFile() error {
+	filePath := r.InputPath
 
 	fmt.Printf("准备处理单个视频...\n")
 
-	result, err := h.conv.ConvertToMP4(filePath, outputDir)
+	result, err := r.conv.ConvertToMP4(filePath, r.OutputDirectory)
 	if err != nil {
 		return fmt.Errorf("转换失败, 详情: %w", err)
 	}
@@ -24,7 +21,7 @@ func (h *AppHandler) handleFile(cfg *Config) error {
 	fmt.Printf("\n处理完毕...\n")
 
 	// ========= 删除逻辑 =========
-	if autoRemove || util.AskForConfirmation("是否删除已成功转换的原始文件?") {
+	if r.AutoRemove || askForConfirmation("是否删除已成功转换的原始文件?") {
 		if err := os.Remove(filePath); err != nil {
 			errorColor.Printf("删除失败 -> %s 错误: %v\n", filePath, err)
 		} else {

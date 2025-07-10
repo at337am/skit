@@ -6,16 +6,16 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"vid2mp4/internal/cli"
 )
 
-type MP4Converter struct{}
+type FFmpegConverter struct{}
 
-func NewMP4Converter() Converter {
-	return &MP4Converter{}
+func NewFFmpegConverter() *FFmpegConverter {
+	return &FFmpegConverter{}
 }
 
-// ConvertToMP4 将单个文件转换为 MP4 格式, 成功时返回输出路径
-func (c *MP4Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult, error) {
+func (f *FFmpegConverter) ConvertToMP4(inputPath, outputDir string) (*cli.ConvertResult, error) {
 
 	// 从输入路径获取文件名（不带扩展名）
 	fileName := filepath.Base(inputPath)
@@ -75,7 +75,7 @@ func (c *MP4Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult
 	firstCommand, err := executeFFmpeg(args)
 	// 如果第一次直接成功了, 则返回结果
 	if err == nil {
-		return &ConvertResult{
+		return &cli.ConvertResult{
 			OutputPath:    outputPath,
 			StatusMessage: fmt.Sprintf("视频流 -> 已复制\n  └─ %s", audioMessage),
 		}, nil
@@ -93,7 +93,7 @@ func (c *MP4Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult
 		outputArgs,
 	)
 	retryCommand, err := executeFFmpeg(retryArgs)
-	// 如果第二次失败, 则返回两次 Stderr 信息
+	// 如果第二次失败, 则返回报错信息: 两次执行的命令
 	if err != nil {
 		return nil, fmt.Errorf(
 			"\n\n--- 复制视频流的失败命令 ---\n%s\n\n--- 视频重编码的失败命令 ---\n%s",
@@ -103,7 +103,7 @@ func (c *MP4Converter) ConvertToMP4(inputPath, outputDir string) (*ConvertResult
 	}
 
 	// 如果第二次成功了, 返回结果
-	return &ConvertResult{
+	return &cli.ConvertResult{
 		OutputPath:    outputPath,
 		StatusMessage: fmt.Sprintf("视频流 -> 已重编码为 H.264\n  └─ %s", audioMessage),
 	}, nil
