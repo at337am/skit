@@ -13,6 +13,7 @@ var (
 	diffColor = color.New(color.FgCyan)
 )
 
+// Hasher 计算哈希的接口
 type Hasher interface {
 	HashFile(filePath string) (string, error)
 	HashDir(dirPath string) (map[string]string, error)

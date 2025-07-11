@@ -29,7 +29,7 @@ func newRootCmd() *cobra.Command {
 		Short: "比较两个文件或目录的内容是否一致 (SHA-256)",
 
 		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
-		Args:         cobra.ExactArgs(2), // 必须为 1 个位置参数
+		Args:         cobra.ExactArgs(2), // 必须为 2 个位置参数
 
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {
