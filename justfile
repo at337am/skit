@@ -1,4 +1,4 @@
-PROJECT_DIRS := "aout byebye dirhash furl gonew img2vid md2pg repaudio tmrn vcat vid2img vid2mp4 xfixer xnet"
+PROJECT_DIRS := "aout byebye dirhash flacify furl gonew img2vid md2pg repaudio tmrn vcat vid2img vid2mp4 xfixer xnet"
 
 default:
     @just --list
