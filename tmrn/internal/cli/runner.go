@@ -49,6 +49,14 @@ func (r *Runner) Validate() error {
 
 // Run 执行核心逻辑
 func (r *Runner) Run() error {
+
+	absPath, err := filepath.Abs(r.DirPath)
+	if err != nil {
+		// 如果无法获取绝对路径，则回退到使用原始路径
+		absPath = r.DirPath
+	}
+	warnColor.Printf("正在处理的目录: %s\n\n", filepath.Base(absPath))
+
 	// 1. 查找文件
 	files, err := r.findFiles()
 	if err != nil {
