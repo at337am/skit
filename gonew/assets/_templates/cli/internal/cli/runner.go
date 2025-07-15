@@ -15,10 +15,16 @@ func NewRunner() *Runner {
 
 // Validate 校验参数
 func (r *Runner) Validate() error {
-	// 在这里实现校验参数的逻辑
 
 	// if r.Path == "" {
-	// 	return fmt.Errorf("The path is empty -> '%s'", r.Path)
+	// 	return errors.New("path is empty")
+	// }
+
+	// if _, err := os.Stat(r.Path); err != nil {
+	// 	if errors.Is(err, os.ErrNotExist) {
+	// 		return fmt.Errorf("path does not exist: %s", r.Path)
+	// 	}
+	// 	return fmt.Errorf("could not access path %s: %w", r.Path, err)
 	// }
 
 	return nil
@@ -26,7 +32,6 @@ func (r *Runner) Validate() error {
 
 // Run 执行核心逻辑
 func (r *Runner) Run() error {
-	// 在这里实现核心逻辑
 
 	// funcName()
 	// askForConfirmation("Hello")
