@@ -40,7 +40,7 @@ func (r *Runner) Validate() error {
 
 	if _, err := os.Stat(r.ProjectName); err == nil {
 		return fmt.Errorf("目标路径 '%s' 已存在, 请检查项目名称", r.ProjectName)
-	} else if !os.IsNotExist(err) {
+	} else if !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("检查目标路径 '%s' 时发生错误: %w", r.ProjectName, err)
 	}
 

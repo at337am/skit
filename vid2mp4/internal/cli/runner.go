@@ -44,7 +44,7 @@ func (r *Runner) Validate() error {
 	// 校验路径, 并将文件信息存入 Runner
 	info, err := os.Stat(r.InputPath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("路径 '%s' 不存在", r.InputPath)
 		} else {
 			return fmt.Errorf("无法访问路径 '%s': %v", r.InputPath, err)
@@ -56,7 +56,7 @@ func (r *Runner) Validate() error {
 	if r.OutputDir != "" {
 		dirInfo, err := os.Stat(r.OutputDir)
 		if err != nil {
-			if os.IsNotExist(err) {
+			if errors.Is(err, os.ErrNotExist) {
 				return fmt.Errorf("输出目录 '%s' 不存在", r.OutputDir)
 			}
 			return fmt.Errorf("无法访问输出目录 '%s': %w", r.OutputDir, err)

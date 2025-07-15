@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -29,7 +30,7 @@ func (r *Runner) Validate() error {
 
 	dirInfo, err := os.Stat(dirPath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("路径不存在 -> '%s'", dirPath)
 		}
 		return fmt.Errorf("无法访问路径 -> '%s' 错误: %w", dirPath, err)
