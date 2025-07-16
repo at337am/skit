@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"hello-server/internal/service"
+	"hello-server/internal/core/service"
 	"net/http"
 	"time"
 

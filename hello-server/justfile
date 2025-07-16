@@ -1,6 +1,9 @@
 default:
     @just --list
 
+cp:
+    fd -e go -x sh -c 'echo "===== {} ====="; cat {}; echo' | wl-copy
+
 run:
     @go run main.go
 
@@ -13,10 +16,8 @@ build-windows:
     @echo "✅ 构建完成：生成了 'hello.exe'"
 
 pkg: build
-    @mkdir -p hello-server/static/ hello-server/templates/ hello-server/config/
-    @cp -r static/* hello-server/static/
-    @cp -r templates/* hello-server/templates/
+    @mkdir -p hello-server/web/ hello-server/config/
+    @cp -r web/* hello-server/web/
     @cp config/config.yaml hello-server/config/
     @mv hello hello-server/
     @echo "✅ 打包完成：./hello-server"
-

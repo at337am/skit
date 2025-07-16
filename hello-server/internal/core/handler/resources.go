@@ -2,7 +2,7 @@ package handler
 
 import (
 	"hello-server/config"
-	"hello-server/internal/service"
+	"hello-server/internal/core/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,14 +16,14 @@ func GetResourcesPageHandler(c *gin.Context) {
 // GetResourcesHandler 获取资源目录的处理函数
 func GetResourcesHandler(c *gin.Context) {
 	rootPath := config.GetFilePath() // 资源根目录
-	baseURL := "/api/video"             // 资源的基础URL
+	baseURL := "/api/video"          // 资源的基础URL
 
 	// 获取目录结构
 	resources, err := service.GetDirectoryStructure(rootPath, baseURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    1,
-			"message": "获取资源目录失败，原因：" + err.Error(),
+			"message": "获取资源目录失败, 原因: " + err.Error(),
 		})
 		return
 	}

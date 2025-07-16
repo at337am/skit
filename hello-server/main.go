@@ -2,21 +2,19 @@ package main
 
 import (
 	"hello-server/config"
-	"hello-server/routes"
-
-	"github.com/gin-gonic/gin"
+	"hello-server/internal/core/handler"
+	"hello-server/internal/router"
 )
 
 func main() {
 	config.InitConfig()
-	
-	r := gin.Default()
-	
-	r.Static("/static", "./static")
 
-	r.LoadHTMLGlob("templates/*")
+	// 注册路由
+	mediaHandler := handler.NewMediaHandler(config.GetFilePath())
+	router := router.SetupRouter(mediaHandler)
 
-	routes.RegisterRoutes(r)
+	addr := config.GetServerPort()
 
-	r.Run(config.GetServerPort())
+	// 启动
+	router.Run(addr)
 }

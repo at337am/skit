@@ -15,10 +15,10 @@ func NoCacheMiddleware() gin.HandlerFunc {
 	}
 }
 
-// CustomCacheMiddleware 自定义缓存控制的中间件
-func CustomCacheMiddleware(maxAge string) gin.HandlerFunc {
+// CacheMiddleware 缓存控制的中间件
+func CacheMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Header("Cache-Control", "max-age="+maxAge)
+		c.Header("Cache-Control", "max-age=1800")
 		c.Next()
 	}
 }
