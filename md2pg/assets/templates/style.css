@@ -10,7 +10,7 @@ body {
     max-width: 720px;
     margin: 20px auto;
     padding: 0 20px;
-    background-color: #FAF9F5;
+    background-color: #F3F3F3;
     overflow-wrap: break-word;
 }
 h1,
@@ -128,12 +128,12 @@ blockquote p:last-child {
     padding: 4px 8px;
     font-size: 0.8em;
     color: #131312;
-    background-color: #FAF9F5;
+    background-color: #F3F3F3;
     border: 1px solid #DDDDDC;
     border-radius: 8px;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.1s;
 }
 
 .copy-button.copied {
@@ -150,7 +150,7 @@ blockquote p:last-child {
     width: 220px;
     max-height: 70vh;
     overflow-y: auto;
-    background-color: #FAF9F5;
+    background-color: #F3F3F3;
     border: 1px solid #DDDDDC;
     border-radius: 8px;
     padding: 15px;
@@ -184,7 +184,7 @@ blockquote p:last-child {
     display: block;
     padding: 2px 5px;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    transition: background-color 0.1s;
 }
 
 #toc-list a:hover {
