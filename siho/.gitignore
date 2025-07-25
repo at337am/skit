@@ -25,8 +25,8 @@ fonts/
 release/
 bak/
 backup/
-result_encrypt/
-result_decrypt/
+encrypted_result/
+decrypted_result/
 
 # archive compressed
 *.zip

@@ -98,7 +98,7 @@ func (h *Handler) processFiles(opName string, processFunc func(string) (string, 
 	for range numWorkers {
 		go func() {
 			defer wg.Done()
-			// 从 jobs 通道接收任务，直到通道关闭
+			// 从 jobs 通道接收任务, 直到通道关闭
 			for inputPath := range jobs {
 				outputPath, err := processFunc(inputPath)
 				results <- jobResult{inputPath: inputPath, outputPath: outputPath, err: err}
