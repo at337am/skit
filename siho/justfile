@@ -1,0 +1,9 @@
+default:
+    @just --list
+
+cp:
+    fd -e go -x sh -c 'echo "===== {} ====="; cat {}; echo' | wl-copy
+
+cl:
+    @rm -rf result*
+    @echo "清理完成"
