@@ -10,7 +10,7 @@ body {
     max-width: 720px;
     margin: 20px auto;
     padding: 0 20px;
-    background-color: #F3F3F3;
+    background-color: #EAEAEA;
     overflow-wrap: break-word;
 }
 h1,
@@ -128,7 +128,7 @@ blockquote p:last-child {
     padding: 4px 8px;
     font-size: 0.8em;
     color: #131312;
-    background-color: #F3F3F3;
+    background-color: #EAEAEA;
     border: 1px solid #DDDDDC;
     border-radius: 8px;
     cursor: pointer;
@@ -150,7 +150,7 @@ blockquote p:last-child {
     width: 220px;
     max-height: 70vh;
     overflow-y: auto;
-    background-color: #F3F3F3;
+    background-color: #EAEAEA;
     border: 1px solid #DDDDDC;
     border-radius: 8px;
     padding: 15px;
