@@ -159,7 +159,7 @@ func (r *Runner) processProducer(jobs chan<- string, procInfoChan chan<- process
 			procInfoChan <- processingInfo{vidPath: path, accessError: err}
 			return nil
 		}
-		if !d.IsDir() && strings.ToLower(filepath.Ext(path)) == r.Extension {
+		if !d.IsDir() && strings.EqualFold(filepath.Ext(path), r.Extension) {
 			jobs <- path // 将任务路径发送给 Worker
 		}
 		return nil
