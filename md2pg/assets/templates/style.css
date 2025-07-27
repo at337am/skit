@@ -1,144 +1,175 @@
-/* 实现点击标题跳转时的平滑滚动效果 */
 html {
+    font-size: 16px;
+    box-sizing: border-box;
     scroll-behavior: smooth;
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* 选中文本时 */
+::selection {
+    background-color: #333;
+    color: #eaeaea;
+}
+
 body {
-    font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", sans-serif;
+    font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", Arial,
+        sans-serif;
+    color: #333;
     line-height: 1.6;
-    color: #131312;
-    max-width: 720px;
+    max-width: 50vw;
     margin: 20px auto;
-    padding: 0 20px;
-    background-color: #F3F3F3;
+    background-color: #eaeaea;
     overflow-wrap: break-word;
 }
+
+hr {
+    margin: 2.5rem 0;
+}
+
 h1,
 h2,
-h3,
+h3 {
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
 h4,
 h5,
 h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
     font-weight: 600;
-}
-h1 {
-    font-size: 2em;
-    padding-bottom: 0.3em;
-    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
+h1 {
+    font-size: 2.441rem;
+    text-align: center;
+}
 h2 {
-    font-size: 1.75em;
-    padding-bottom: 0.3em;
+    font-size: 1.953rem;
 }
 h3 {
-    font-size: 1.5em;
+    font-size: 1.563rem;
 }
 h4 {
-    font-size: 1.25em;
+    font-size: 1.25rem;
 }
 h5 {
-    font-size: 1.1em;
+    font-size: 1rem;
 }
 h6 {
-    font-size: 1em;
+    font-size: 0.8rem;
 }
+
 p {
-    margin-top: 0;
-    margin-bottom: 1em;
+    margin-bottom: 1rem;
 }
+
 a {
-    color: #7B5FA0;
+    color: #7b5fa0;
     text-decoration: none;
 }
 a:hover {
     text-decoration: underline;
 }
+
 ul,
 ol {
-    padding-left: 2em;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
 }
 li {
-    margin-bottom: 0.3em;
+    margin-bottom: 0.5rem;
 }
+ul li:last-child,
+ol li:last-child {
+    margin-bottom: 0;
+}
+
 code {
     font-family: "JetBrainsMonoNL Nerd Font Mono", monospace;
-    background-color: #FDFCFA;
-    padding: 0.2em 0.4em;
-    margin: 0;
-    font-size: 85%;
-    border-radius: 4px;
-    border: 1px solid #DDDDDC;
-    color: #383A42;
+    background-color: #d6d6d6;
+    font-size: 0.85rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: 6px;
+    color: #222;
 }
 
 pre {
     font-family: "JetBrainsMonoNL Nerd Font Mono", monospace;
-    background-color: #FDFCFA;
-    padding: 16px;
+    background-color: #d6d6d6;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
     overflow: visible;
-    line-height: 1.45;
-    border-radius: 8px;
-    border: 1px solid #DDDDDC;
-    margin-top: 0;
-    margin-bottom: 0;
+    border-radius: 6px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
 }
 pre code {
-    padding: 0;
-    margin: 0;
-    font-size: 100%;
     background-color: transparent;
+    font-size: 0.85rem;
     border: none;
-    color: inherit;
+    padding: 0;
     white-space: pre-wrap;
-    color: #383A42;
+    color: #222;
     word-break: break-word;
 }
-strong {
-    font-weight: 600;
-}
-em {
-    font-style: italic;
-}
+
 blockquote {
-    padding: 0.5em 1em;
-    margin: 0 0 1em 0;
-    border-left: 4px solid #B7B6B3;
+    padding: 0.5rem 0 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-left: 0.25rem solid #c0c0c0;
 }
 blockquote p {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.5rem;
 }
 blockquote p:last-child {
     margin-bottom: 0;
 }
+blockquote ul:last-child,
+blockquote ol:last-child {
+    margin-bottom: 0;
+}
+
+strong {
+    font-weight: 600;
+}
+
+em {
+    font-style: italic;
+}
 
 .code-block-wrapper {
     position: relative;
-    margin-bottom: 1em;
 }
 
 .copy-button {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 4px 8px;
-    font-size: 0.8em;
-    color: #131312;
-    background-color: #F3F3F3;
-    border: 1px solid #DDDDDC;
-    border-radius: 8px;
+    top: 0.4rem;
+    right: 0.4rem;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    color: #333;
+    background-color: #eaeaea;
+    border: 1px solid #d6d6d6;
+    border-radius: 6px;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.1s;
 }
 
 .copy-button.copied {
-    background-color: #E9E8E3;
-    border-color: #D0D0C8;
+    background-color: #d6d6d6;
 }
 
 /* --- 目录样式 --- */
@@ -147,15 +178,16 @@ blockquote p:last-child {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 220px;
-    max-height: 70vh;
+    min-width: 15vw;
+    max-width: 20vw;
+    max-height: 80vh;
     overflow-y: auto;
-    background-color: #F3F3F3;
-    border: 1px solid #DDDDDC;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    font-size: 0.9em;
+    background-color: #eaeaea;
+    border: 1px solid #d6d6d6;
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
     z-index: 100;
     display: none;
 }
@@ -174,20 +206,32 @@ blockquote p:last-child {
 }
 
 #toc-list li {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin: 0;
 }
 
 #toc-list a {
-    color: #131312;
+    color: #333;
     text-decoration: none;
     display: block;
-    padding: 2px 5px;
-    border-radius: 4px;
-    transition: background-color 0.1s;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
 }
 
 #toc-list a:hover {
-    background-color: #E9E8E3;
+    background-color: #d6d6d6;
     text-decoration: none;
+}
+
+/* 视口宽度小于1200px */
+@media (max-width: 1199.98px) {
+    body {
+        max-width: 70vw;
+    }
+}
+
+/* 视口宽度小于768px */
+@media (max-width: 767.98px) {
+    body {
+        max-width: 90vw;
+    }
 }
