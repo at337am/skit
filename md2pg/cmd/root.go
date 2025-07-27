@@ -46,7 +46,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "", "md2pg_result", "Specify the output path for the resulting file")
+	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "", "md2pg_result", "Specify the directory path to store the output results")
 
 	return cmd
 }

@@ -54,15 +54,20 @@ func (r *Runner) Validate() error {
 
 	// 如果指定了输出目录, 则校验该目录
 	if r.OutputDir != "" {
-		dirInfo, err := os.Stat(r.OutputDir)
-		if err != nil {
+		// 检查输出路径
+		if info, err := os.Stat(r.OutputDir); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				return fmt.Errorf("输出目录 '%s' 不存在", r.OutputDir)
+				// 目录不存在, 尝试创建
+				if mkErr := os.MkdirAll(r.OutputDir, 0755); mkErr != nil {
+					return fmt.Errorf("创建输出目录失败: %w", mkErr)
+				}
+			} else {
+				// 其他 stat 错误 (例如权限问题)
+				return fmt.Errorf("检查输出路径失败: %w", err)
 			}
-			return fmt.Errorf("无法访问输出目录 '%s': %w", r.OutputDir, err)
-		}
-		if !dirInfo.IsDir() {
-			return fmt.Errorf("输出路径不是一个目录: %s", r.OutputDir)
+		} else if !info.IsDir() {
+			// 路径存在但不是一个目录
+			return fmt.Errorf("输出路径存在但不是目录: %s", r.OutputDir)
 		}
 	}
 
