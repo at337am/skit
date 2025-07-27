@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"md2pg/assets"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
@@ -14,6 +17,41 @@ import (
 var (
 	pageTmpl = template.Must(template.New("page").Parse(assets.PageHTML))
 )
+
+// convert 转换单个文件, 返回输出路径
+func convert(filePath, outputDir string) (string, error) {
+	fileName := filepath.Base(filePath)
+
+	// 标题 = 不含后缀的文件名称
+	title := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+
+	// 输出文件路径
+	outputPath := filepath.Join(outputDir, fmt.Sprintf("%s.html", title))
+
+	// 读取 Markdown 文件内容
+	mdContent, err := os.ReadFile(filePath)
+	if err != nil {
+		// 注意: 此处错误信息使用了传入的 filePath
+		return "", fmt.Errorf("读取 Markdown 文件 '%s' 发生错误: %w", filePath, err)
+	}
+
+	// 将 Markdown 字节切片转换为 HTML 格式的字节切片
+	htmlFragment := convertMarkdownToHTML(mdContent)
+
+	// 将 HTML 字节切片嵌入到 HTML 页面模板
+	finalHTML, err := generateHTMLPage(htmlFragment, title)
+	if err != nil {
+		return "", fmt.Errorf("生成 HTML 时发生错误: %w", err)
+	}
+
+	// 将最终的 HTML 写入输出文件
+	err = os.WriteFile(outputPath, finalHTML, 0644)
+	if err != nil {
+		return "", fmt.Errorf("写入输出文件 '%s' 发生错误: %w", outputPath, err)
+	}
+
+	return outputPath, nil
+}
 
 // convertMarkdownToHTML 函数将输入的 Markdown 字节切片转换为 HTML 格式的字节切片
 func convertMarkdownToHTML(md []byte) []byte {

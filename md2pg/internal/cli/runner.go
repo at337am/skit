@@ -4,20 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/fatih/color"
 )
 
 var (
 	successColor = color.New(color.FgGreen)
+	errorColor   = color.New(color.FgRed)
 )
 
 // Runner 存储选项参数
 type Runner struct {
-	MDPath    string
+	Path      string
 	OutputDir string
+	isDir     bool
 }
 
 // NewRunner 构造函数 (也可以在这里设置参数默认值)
@@ -27,16 +27,18 @@ func NewRunner() *Runner {
 
 // Validate 校验参数
 func (r *Runner) Validate() error {
-	if r.MDPath == "" {
+	if r.Path == "" {
 		return errors.New("指定的 Markdown 文件路径为空")
 	}
 
 	// 校验路径是否存在
-	if _, err := os.Stat(r.MDPath); err != nil {
+	if info, err := os.Stat(r.Path); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("路径 '%s' 不存在", r.MDPath)
+			return fmt.Errorf("路径 '%s' 不存在", r.Path)
 		}
-		return fmt.Errorf("无法访问路径 '%s': %w", r.MDPath, err)
+		return fmt.Errorf("无法访问路径 '%s': %w", r.Path, err)
+	} else {
+		r.isDir = info.IsDir()
 	}
 
 	// 检查输出路径
@@ -60,35 +62,18 @@ func (r *Runner) Validate() error {
 
 // Run 执行核心逻辑
 func (r *Runner) Run() error {
-	fileName := filepath.Base(r.MDPath)
-
-	// 标题 = 不含后缀的文件名称
-	title := strings.TrimSuffix(fileName, filepath.Ext(fileName))
-
-	// 输出文件路径
-	outputPath := filepath.Join(r.OutputDir, fmt.Sprintf("%s.html", title))
-
-	// 读取 Markdown 文件内容
-	mdContent, err := os.ReadFile(r.MDPath)
-	if err != nil {
-		return fmt.Errorf("读取 Markdown 文件 '%s' 发生错误: %w", r.MDPath, err)
+	// 如果是目录
+	if r.isDir {
+		return r.processDir()
 	}
 
-	// 将 Markdown 字节切片转换为 HTML 格式的字节切片
-	htmlFragment := convertMarkdownToHTML(mdContent)
-
-	// 将 HTML 字节切片嵌入到 HTML 页面模板
-	finalHTML, err := generateHTMLPage(htmlFragment, title)
+	// 如果是单个文件
+	outputPath, err := convert(r.Path, r.OutputDir)
 	if err != nil {
-		return fmt.Errorf("生成 HTML 时发生错误: %w", err)
+		return fmt.Errorf("失败文件: %s, 错误: %w", r.Path, err)
 	}
 
-	// 将最终的 HTML 写入输出文件
-	err = os.WriteFile(outputPath, finalHTML, 0644)
-	if err != nil {
-		return fmt.Errorf("写入输出文件 '%s' 发生错误: %w", outputPath, err)
-	}
+	successColor.Printf("已转换 -> %s\n", outputPath)
 
-	successColor.Printf("Markdown 转换完成: '%s' -> '%s'\n", r.MDPath, outputPath)
 	return nil
 }

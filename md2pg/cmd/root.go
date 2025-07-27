@@ -23,7 +23,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:   "md2pg <markdown-path>",
+		Use:   "md2pg <file-or-dir>",
 		Short: "Converts Markdown files to HTML pages",
 
 		SilenceUsage: true,
@@ -32,7 +32,7 @@ func newRootCmd() *cobra.Command {
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			runner.MDPath = args[0]
+			runner.Path = args[0]
 
 			if err := runner.Validate(); err != nil {
 				return err
