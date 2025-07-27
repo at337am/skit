@@ -23,7 +23,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:          "tmrn <directory-path>",
+		Use:          "tmrn <dir>",
 		Short:        "批量重命名文件 (按照文件修改时间排序)",
 		SilenceUsage: true,
 		Args:         cobra.ExactArgs(1),

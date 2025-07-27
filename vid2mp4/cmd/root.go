@@ -32,7 +32,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner(conv)
 
 	var cmd = &cobra.Command{
-		Use:          "vid2mp4 <file-or-directory-path>",
+		Use:          "vid2mp4 <file-or-dir>",
 		Short:        "将视频文件或目录中的视频文件转换为 MP4 格式",
 		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
 		Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
