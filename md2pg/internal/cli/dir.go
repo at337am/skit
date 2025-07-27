@@ -11,8 +11,8 @@ import (
 )
 
 func (r *Runner) processDir() error {
-	// result 包含单个文件转换的结果
-	type result struct {
+	// jobResult 包含单个文件转换的结果
+	type jobResult struct {
 		outputPath string // 输出路径
 		sourcePath string // 原始路径
 		convertErr error  // 转换失败的 err
@@ -21,8 +21,8 @@ func (r *Runner) processDir() error {
 
 	numWorkers := runtime.NumCPU()
 
-	jobs := make(chan string, numWorkers)
-	results := make(chan result)
+	jobs := make(chan string, numWorkers*2)
+	results := make(chan jobResult)
 
 	var wg sync.WaitGroup
 
@@ -33,7 +33,7 @@ func (r *Runner) processDir() error {
 			defer wg.Done()
 			for path := range jobs {
 				outputPath, err := convert(path, r.OutputDir)
-				results <- result{
+				results <- jobResult{
 					outputPath: outputPath,
 					sourcePath: path,
 					convertErr: err,
@@ -48,7 +48,7 @@ func (r *Runner) processDir() error {
 		filepath.WalkDir(r.Path, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				// 发现路径访问错误, 发送到 results 通道并继续遍历
-				results <- result{sourcePath: path, walkErr: err}
+				results <- jobResult{sourcePath: path, walkErr: err}
 				return nil
 			}
 			if !d.IsDir() && strings.EqualFold(filepath.Ext(d.Name()), ".md") {
