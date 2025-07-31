@@ -6,6 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/fatih/color"
+)
+
+var (
+	successColor = color.New(color.FgGreen)
+	warnColor    = color.New(color.FgCyan)
 )
 
 // Runner 存储选项参数
@@ -55,7 +62,7 @@ func (r *Runner) Run() error {
 		// 如果无法获取绝对路径，则回退到使用原始路径
 		absPath = r.DirPath
 	}
-	warnColor.Printf("正在处理的目录: %s\n\n", filepath.Base(absPath))
+	fmt.Printf("正在处理的目录: %s\n\n", filepath.Base(absPath))
 
 	// 1. 查找文件
 	files, err := r.findFiles()
@@ -90,4 +97,12 @@ func (r *Runner) Run() error {
 	}
 
 	return nil
+}
+
+// askForConfirmation 辅助函数, 询问用户是否继续
+func askForConfirmation(format string, a ...any) bool {
+	fmt.Printf(format+" [y/N]: ", a...)
+	var response string
+	fmt.Scanln(&response)
+	return strings.ToLower(strings.TrimSpace(response)) == "y"
 }
