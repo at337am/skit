@@ -13,6 +13,7 @@ import (
 var (
 	successColor = color.New(color.FgGreen)
 	warnColor    = color.New(color.FgCyan)
+	noticeColor  = color.New(color.FgYellow)
 )
 
 // Runner 存储选项参数
@@ -33,6 +34,21 @@ func (r *Runner) Validate() error {
 
 	if dirPath == "" {
 		return fmt.Errorf("路径不能为空 -> '%s'", dirPath)
+	}
+
+	// 检查是否在用户主目录中运行
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("无法获取用户主目录: %w", err)
+	}
+
+	absPath, err := filepath.Abs(dirPath)
+	if err != nil {
+		return fmt.Errorf("无法获取绝对路径 '%s': %w", dirPath, err)
+	}
+
+	if absPath == homeDir {
+		return errors.New("tmrn 不允许在用户主目录 ~ 中运行")
 	}
 
 	dirInfo, err := os.Stat(dirPath)
@@ -62,7 +78,8 @@ func (r *Runner) Run() error {
 		// 如果无法获取绝对路径，则回退到使用原始路径
 		absPath = r.DirPath
 	}
-	fmt.Printf("正在处理的目录: %s\n\n", filepath.Base(absPath))
+	fmt.Printf("正在处理的目录: ")
+	noticeColor.Printf("%s\n\n", filepath.Base(absPath))
 
 	// 1. 查找文件
 	files, err := r.findFiles()
