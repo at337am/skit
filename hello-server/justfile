@@ -4,20 +4,17 @@ default:
 cp:
     fd -e go -x sh -c 'echo "===== {} ====="; cat {}; echo' | wl-copy
 
-run:
-    @go run main.go
-
 build:
     @go build -o hello main.go
-    @echo "✅ 构建完成：生成了可执行文件 'hello'"
+    @echo "✅ 构建完成"
 
 build-windows:
     @go build -ldflags="-H windowsgui" -o hello.exe main.go
-    @echo "✅ 构建完成：生成了 'hello.exe'"
+    @echo "✅ 构建完成"
 
 pkg: build
     @mkdir -p hello-server/web/ hello-server/config/
     @cp -r web/* hello-server/web/
     @cp config/config.yaml hello-server/config/
     @mv hello hello-server/
-    @echo "✅ 打包完成：./hello-server"
+    @echo "✅ 打包完成 -> ./hello-server"
