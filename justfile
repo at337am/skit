@@ -1,4 +1,4 @@
-PROJECT_DIRS := "dirhash flacify furl gonew img2vid md2pg siho tmrn vcat vid2img vid2mp4 xfixer xnet"
+PROJECT_DIRS := "dirhash flacify gonew img2vid md2pg siho tmrn vcat vid2img vid2mp4 xfixer xnet"
 
 default:
     @just --list
