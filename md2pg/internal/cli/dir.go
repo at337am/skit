@@ -32,7 +32,18 @@ func (r *Runner) processDir() error {
 		go func() {
 			defer wg.Done()
 			for path := range jobs {
-				outputPath, err := convert(path, r.OutputDir)
+				// 计算源文件相对于输入根目录的相对路径
+				relPath, err := filepath.Rel(r.Path, path)
+				if err != nil {
+					results <- jobResult{sourcePath: path, convertErr: fmt.Errorf("无法计算相对路径: %w", err)}
+					continue
+				}
+
+				// 构建保持目录结构的输出路径
+				htmlRelPath := strings.TrimSuffix(relPath, filepath.Ext(relPath)) + ".html"
+				outputPath := filepath.Join(r.OutputDir, htmlRelPath)
+
+				err = convert(path, outputPath)
 				results <- jobResult{
 					outputPath: outputPath,
 					sourcePath: path,

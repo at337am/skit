@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -41,20 +43,25 @@ func (r *Runner) Validate() error {
 		r.isDir = info.IsDir()
 	}
 
-	// 检查输出路径
-	if info, err := os.Stat(r.OutputDir); err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			// 目录不存在, 尝试创建
-			if mkErr := os.MkdirAll(r.OutputDir, 0755); mkErr != nil {
-				return fmt.Errorf("创建输出目录失败: %w", mkErr)
-			}
+	// 如果指定了输出目录 -o ./dir
+	// 则:
+	// path/notes -> ./dir
+	// path/bookmarks.md -> ./dir/bookmarks.html
+
+	// 如果未指定输出目录, 则输出到和输入目录同级的路径下, 名称为 <原目录名>_md2pg
+	// 比如:
+	// path/notes -> path/notes_md2pg
+	// path/bookmarks.md -> path/bookmarks.html
+	if r.OutputDir == "" {
+		if r.isDir {
+			parentDir := filepath.Dir(r.Path)
+			baseName := filepath.Base(r.Path)
+			outputDirName := fmt.Sprintf("%s_md2pg", baseName)
+			r.OutputDir = filepath.Join(parentDir, outputDirName)
 		} else {
-			// 其他 stat 错误 (例如权限问题)
-			return fmt.Errorf("检查输出路径失败: %w", err)
+			// 输入是文件, 输出到文件所在目录
+			r.OutputDir = filepath.Dir(r.Path)
 		}
-	} else if !info.IsDir() {
-		// 路径存在但不是一个目录
-		return fmt.Errorf("输出路径存在但不是目录: %s", r.OutputDir)
 	}
 
 	return nil
@@ -62,14 +69,30 @@ func (r *Runner) Validate() error {
 
 // Run 执行核心逻辑
 func (r *Runner) Run() error {
+	// 在开始处理前, 确保输出目录存在
+	if info, err := os.Stat(r.OutputDir); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			if mkErr := os.MkdirAll(r.OutputDir, 0755); mkErr != nil {
+				return fmt.Errorf("创建输出目录 '%s' 失败: %w", r.OutputDir, mkErr)
+			}
+		} else {
+			return fmt.Errorf("检查输出路径 '%s' 失败: %w", r.OutputDir, err)
+		}
+	} else if !info.IsDir() {
+		return fmt.Errorf("输出路径 '%s' 已存在但不是一个目录", r.OutputDir)
+	}
+
 	// 如果是目录
 	if r.isDir {
 		return r.processDir()
 	}
 
 	// 如果是单个文件
-	outputPath, err := convert(r.Path, r.OutputDir)
-	if err != nil {
+	fileName := filepath.Base(r.Path)
+	htmlFileName := strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".html"
+	outputPath := filepath.Join(r.OutputDir, htmlFileName)
+
+	if err := convert(r.Path, outputPath); err != nil {
 		return fmt.Errorf("失败文件: %s, 错误: %w", r.Path, err)
 	}
 
