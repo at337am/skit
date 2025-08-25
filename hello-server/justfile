@@ -18,3 +18,10 @@ pkg: build
     @cp config/config.yaml hello-server/config/
     @mv hello hello-server/
     @echo "✅ 打包完成 -> ./hello-server"
+
+pkg-windows: build-windows
+    @mkdir -p hello-server/web/ hello-server/config/
+    @cp -r web/* hello-server/web/
+    @cp config/config.yaml hello-server/config/
+    @mv hello.exe hello-server/
+    @echo "✅ 打包完成 -> ./hello-server"
