@@ -45,22 +45,19 @@ func (r *Runner) Validate() error {
 
 	// 如果指定了输出目录 -o ./dir
 	// 则:
-	// path/notes -> ./dir
+	// path/notes/ -> ./dir/
 	// path/bookmarks.md -> ./dir/bookmarks.html
 
-	// 如果未指定输出目录, 则输出到和输入目录同级的路径下, 名称为 <原目录名>_md2pg
+	// 如果未指定, 则输出到程序执行时所在的路径下
 	// 比如:
-	// path/notes -> path/notes_md2pg
-	// path/bookmarks.md -> path/bookmarks.html
+	// path/notes/ -> ./md2pg_result/
+	// path/bookmarks.md -> ./md2pg_result/bookmarks.html
 	if r.OutputDir == "" {
 		if r.isDir {
-			parentDir := filepath.Dir(r.Path)
-			baseName := filepath.Base(r.Path)
-			outputDirName := fmt.Sprintf("%s_md2pg", baseName)
-			r.OutputDir = filepath.Join(parentDir, outputDirName)
+			r.OutputDir = "md2pg_result"
 		} else {
 			// 输入是文件, 输出到文件所在目录
-			r.OutputDir = filepath.Dir(r.Path)
+			r.OutputDir = "."
 		}
 	}
 
