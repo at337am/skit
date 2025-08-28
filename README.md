@@ -14,6 +14,7 @@ The following features have been fully implemented and thoroughly tested:
 - siho
 - tmrn
 - vid2mp4
+- xla
 - xnet
 
 ## How to Use It
