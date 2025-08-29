@@ -57,7 +57,7 @@ func (r *Runner) Run() error {
 		fmt.Printf("  Proxy: Disabled\n")
 	}
 
-	blue.Println("------ Start ------")
+	blue.Println("---- Start ----")
 
 	var outputDevice string
 	if runtime.GOOS == "windows" {
@@ -85,7 +85,7 @@ func (r *Runner) Run() error {
 	err := wgetCmd.Run()
 	endTime := time.Now()
 
-	blue.Println("------ Complete ------")
+	blue.Println("----- End -----")
 
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
