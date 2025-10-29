@@ -91,7 +91,7 @@ func (r *Runner) processDir() error {
 			convertErrors = append(convertErrors, err)
 			errorColor.Printf("Failed -> %s\n", res.sourcePath)
 		} else {
-			successColor.Printf("已转换 -> %s\n", res.outputPath)
+			successColor.Printf("Converted -> %s\n", res.outputPath)
 		}
 	}
 

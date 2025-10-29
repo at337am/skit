@@ -93,7 +93,7 @@ func (r *Runner) Run() error {
 		return fmt.Errorf("失败文件: %s, 错误: %w", r.Path, err)
 	}
 
-	successColor.Printf("已转换 -> %s\n", outputPath)
+	successColor.Printf("Converted -> %s\n", outputPath)
 
 	return nil
 }
