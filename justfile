@@ -1,4 +1,4 @@
-PROJECT_DIRS := "dirhash gonew md2pg siho tmrn vid2mp4 xla xnet"
+PROJECT_DIRS := "dirhash gonew md2pg siho tmrn vid2mp4 xla"
 
 default:
     @just --list
