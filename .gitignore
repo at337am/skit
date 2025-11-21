@@ -14,8 +14,6 @@ go.work.sum
 
 .env
 
-# mjj
-
 # directory
 data/
 tmp/
