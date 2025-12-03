@@ -41,6 +41,7 @@ func newRootCmd() *cobra.Command {
 	}
 
 	cmd.Flags().BoolVarP(&runner.ReverseSort, "reverse", "r", false, "启用从晚到早排序 (默认为从早到晚)")
+	cmd.Flags().BoolVarP(&runner.RandomMode, "random", "R", false, "随机打乱文件名 (添加4位随机前缀)")
 	cmd.Flags().StringVarP(&runner.FileExt, "extension", "e", "", "要处理的文件格式")
 
 	return cmd

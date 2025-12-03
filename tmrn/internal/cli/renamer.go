@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"math/rand/v2"
 	"os"
 	"path/filepath"
 	"slices"
@@ -14,6 +15,7 @@ type renameResult struct {
 	finalPath    string
 }
 
+// renameFiles 时间排序重命名
 func (r *Runner) renameFiles(files []fileInfo) ([]renameResult, error) {
 	if len(files) == 0 {
 		return nil, errors.New("没有找到匹配的文件")
@@ -75,6 +77,45 @@ func (r *Runner) renameFiles(files []fileInfo) ([]renameResult, error) {
 		results = append(results, renameResult{
 			originalPath: op.originalPath,
 			finalPath:    op.finalPath,
+		})
+	}
+
+	return results, nil
+}
+
+// randomizeFiles 随机前缀
+func (r *Runner) randomizeFiles(files []fileInfo) ([]renameResult, error) {
+	if len(files) == 0 {
+		return nil, errors.New("没有找到匹配的文件")
+	}
+
+	results := make([]renameResult, 0, len(files))
+
+	// 定义字符集 (大小写英文字母)
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+	for _, file := range files {
+		// 生成 4 位随机英文字符
+		randBytes := make([]byte, 4)
+		for i := range randBytes {
+			randBytes[i] = charset[rand.N(len(charset))]
+		}
+		prefix := string(randBytes)
+
+		// 构造新文件名: asdf_filename.ext
+		originalName := filepath.Base(file.path)
+		finalName := fmt.Sprintf("%s_%s", prefix, originalName)
+		finalPath := filepath.Join(r.DirPath, finalName)
+
+		// 执行重命名
+		if err := os.Rename(file.path, finalPath); err != nil {
+			warnColor.Fprintf(os.Stderr, "注意: 无法将 %s 重命名为 %s: %v\n", originalName, finalName, err)
+			continue
+		}
+
+		results = append(results, renameResult{
+			originalPath: file.path,
+			finalPath:    finalPath,
 		})
 	}
 
