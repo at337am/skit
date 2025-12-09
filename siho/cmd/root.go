@@ -23,16 +23,16 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:   "siho <file-or-dir>",
+		Use:   "siho <file>...",
 		Short: "Securely encrypt and decrypt files with ease",
 
-		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
-		Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
+		SilenceUsage: true,                  // 禁止 在出现错误时, 自动打印用法信息 Usage
+		Args:         cobra.MinimumNArgs(1), // 最少 1 个位置参数
 
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			runner.Path = args[0]
+			runner.FilePaths = args
 
 			if err := runner.Validate(); err != nil {
 				return err

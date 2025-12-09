@@ -24,14 +24,14 @@ type Cryptor interface {
 }
 
 type Handler struct {
-	Path      string
+	FilePaths []string
 	OutputDir string
 	crypt     Cryptor
 }
 
-func NewHandler(path string, outputDir string, c Cryptor) *Handler {
+func NewHandler(paths []string, outputDir string, c Cryptor) *Handler {
 	return &Handler{
-		Path:      path,
+		FilePaths: paths,
 		OutputDir: outputDir,
 		crypt:     c,
 	}
@@ -78,7 +78,7 @@ func (h *Handler) processFiles(opName string, processFunc func(string) (string, 
 		err        error
 	}
 
-	files, err := collectFilesToProcess(h.Path)
+	files, err := collectFilesToProcess(h.FilePaths)
 	if err != nil {
 		return fmt.Errorf("无法获取待%s的文件: %w", opName, err)
 	}
@@ -139,30 +139,22 @@ func (h *Handler) processFiles(opName string, processFunc func(string) (string, 
 }
 
 // collectFilesToProcess 收集待处理的文件路径切片
-func collectFilesToProcess(path string) ([]string, error) {
-	info, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("路径不存在: %s", path)
-		}
-		return nil, fmt.Errorf("无法访问路径 %s: %w", path, err)
-	}
-
-	// 准备待处理文件列表
+func collectFilesToProcess(paths []string) ([]string, error) {
 	var files []string
-	if info.IsDir() {
-		entries, err := os.ReadDir(path)
+
+	for _, path := range paths {
+		info, err := os.Stat(path)
 		if err != nil {
-			return nil, fmt.Errorf("读取目录 '%s' 失败: %w", path, err)
-		}
-		for _, entry := range entries {
-			if entry.IsDir() {
-				warnColor.Printf("跳过子目录: %s\n", entry.Name())
-				continue
+			if errors.Is(err, os.ErrNotExist) {
+				return nil, fmt.Errorf("路径不存在: %s", path)
 			}
-			files = append(files, filepath.Join(path, entry.Name()))
+			return nil, fmt.Errorf("无法访问路径 %s: %w", path, err)
 		}
-	} else {
+
+		if info.IsDir() {
+			warnColor.Printf("跳过目录: %s\n", path)
+			continue
+		}
 		files = append(files, path)
 	}
 

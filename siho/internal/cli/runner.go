@@ -12,10 +12,10 @@ import (
 
 // Runner 存储选项参数
 type Runner struct {
-	Path      string // 待处理的路径
-	Decrypt   bool   // 解密模式
-	OutputDir string // 指定输出目录
-	password  string // 输入的密码
+	FilePaths []string // 待处理的文件路径列表
+	Decrypt   bool     // 解密模式
+	OutputDir string   // 指定输出目录
+	password  string   // 输入的密码
 }
 
 func NewRunner() *Runner {
@@ -25,9 +25,8 @@ func NewRunner() *Runner {
 // Validate 校验参数, 协调执行各个校验步骤
 func (r *Runner) Validate() error {
 	// 校验待处理的路径
-	info, err := r.validateInputPath()
-	if err != nil {
-		return err
+	if len(r.FilePaths) == 0 {
+		return errors.New("未指定待处理的文件")
 	}
 
 	// 获取并设置密码
@@ -36,7 +35,7 @@ func (r *Runner) Validate() error {
 	}
 
 	// 设置并准备输出目录
-	if err := r.setupAndPrepareOutputDir(info.IsDir()); err != nil {
+	if err := r.setupAndPrepareOutputDir(); err != nil {
 		return err
 	}
 
@@ -50,28 +49,14 @@ func (r *Runner) Run() error {
 	if err != nil {
 		return fmt.Errorf("初始化对称加密结构时出错: %w", err)
 	}
-	h := handler.NewHandler(r.Path, r.OutputDir, c)
+
+	h := handler.NewHandler(r.FilePaths, r.OutputDir, c)
 
 	// 2. 执行操作
 	if r.Decrypt {
 		return h.HandleDecrypt()
 	}
 	return h.HandleEncrypt()
-}
-
-// validateInputPath 校验待处理的路径是否存在且可访问
-func (r *Runner) validateInputPath() (os.FileInfo, error) {
-	if r.Path == "" {
-		return nil, errors.New("待处理的路径为空")
-	}
-	info, err := os.Stat(r.Path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("路径不存在: %s", r.Path)
-		}
-		return nil, fmt.Errorf("无法访问路径 %s: %w", r.Path, err)
-	}
-	return info, nil
 }
 
 // acquirePassword 提示用户输入并设置密码
@@ -116,16 +101,18 @@ func (r *Runner) acquirePassword() error {
 }
 
 // setupAndPrepareOutputDir 设置并准备输出目录
-func (r *Runner) setupAndPrepareOutputDir(isSourceDir bool) error {
+func (r *Runner) setupAndPrepareOutputDir() error {
 	// 1. 如果输出目录未指定, 则设置默认值
 	if r.OutputDir == "" {
-		if isSourceDir {
+		// 如果有多个文件，默认输出到专门的目录
+		if len(r.FilePaths) > 1 {
 			if r.Decrypt {
 				r.OutputDir = "decrypted_result"
 			} else {
 				r.OutputDir = "encrypted_result"
 			}
 		} else {
+			// 如果只有 1 个文件，默认输出到当前目录
 			r.OutputDir = "."
 		}
 	}
