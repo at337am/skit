@@ -21,7 +21,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:          "tran",
+		Use:          "xla",
 		Short:        "Translate your text",
 		SilenceUsage: true,
 
