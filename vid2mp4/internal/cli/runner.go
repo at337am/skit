@@ -74,18 +74,22 @@ func (r *Runner) Run() error {
 	fmt.Printf("准备处理 %d 个输入参数...\n", len(r.InputPaths))
 
 	// 调用执行
-	result, processErr := r.processBatch()
-	if processErr != nil {
+	result, err := r.processBatch()
+	if err != nil {
+		return err
+	}
+
+	// 检查是否有任务失败 (业务层面的失败)
+	if len(result.failedJobs) > 0 {
 		warnColor.Printf("注意: 部分任务处理失败, 详情见下文...\n")
 	}
 
 	// ========= 显示结果 =========
 	successCount := len(result.successJobs)
 	failedCount := len(result.failedJobs)
-	accessErrCount := len(result.accessErrors)
 
-	if successCount == 0 && failedCount == 0 && accessErrCount == 0 {
-		warnColor.Printf("没有找到需要转换的文件 (可能被跳过或不是有效文件)\n")
+	if successCount == 0 && failedCount == 0 {
+		warnColor.Printf("所有输入路径均已被跳过, 无需转换\n")
 	}
 
 	if successCount > 0 {
@@ -101,16 +105,10 @@ func (r *Runner) Run() error {
 		}
 	}
 
-	if accessErrCount > 0 {
-		for path, err := range result.accessErrors {
-			warnColor.Printf("访问错误: %s -> %v\n", path, err)
-		}
-	}
-
 	fmt.Printf("\n处理完毕...\n")
 
 	// ========= 删除逻辑 =========
-	if len(result.successJobs) > 0 {
+	if successCount > 0 {
 		if r.AutoRemove || askForConfirmation("是否删除已成功转换的原始文件?") {
 			for filePath := range result.successJobs {
 				if err := os.Remove(filePath); err != nil {
@@ -124,7 +122,11 @@ func (r *Runner) Run() error {
 		}
 	}
 
-	return processErr
+	if failedCount > 0 {
+		return fmt.Errorf("处理完成, 但有 %d 个文件转换失败", failedCount)
+	}
+
+	return nil
 }
 
 // askForConfirmation 辅助函数, 询问用户是否继续
