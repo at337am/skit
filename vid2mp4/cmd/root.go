@@ -32,15 +32,15 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner(conv)
 
 	var cmd = &cobra.Command{
-		Use:          "vid2mp4 <file-or-dir>",
-		Short:        "将视频文件或目录中的视频文件转换为 MP4 格式",
-		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
-		Args:         cobra.ExactArgs(1), // 必须为 1 个位置参数
+		Use:          "vid2mp4 <files...>",
+		Short:        "Convert video to MP4",
+		SilenceUsage: true,                  // 禁止 在出现错误时, 自动打印用法信息 Usage
+		Args:         cobra.MinimumNArgs(1), // 最少 1 个位置参数
 
 		// RunE 是执行入口函数, 它允许返回 error, 是 cobra 的推荐的实践
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			runner.InputPath = args[0]
+			runner.InputPaths = args
 
 			if err := runner.Validate(); err != nil {
 				return err
@@ -55,7 +55,6 @@ func newRootCmd() *cobra.Command {
 	}
 
 	cmd.Flags().BoolVarP(&runner.AutoRemove, "yes", "y", false, "自动删除转换后的视频文件")
-	cmd.Flags().StringVarP(&runner.Extension, "extension", "e", "mov", "待转换的视频文件格式")
 	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "o", "", "指定输出目录, 默认与视频路径同级")
 
 	return cmd

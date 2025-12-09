@@ -24,65 +24,8 @@ type processingInfo struct {
 	convertError  error
 }
 
-func (r *Runner) handleDir() error {
-	fmt.Printf("准备处理目录...\n")
-
-	// 调用执行, 返回的错误是描述性的
-	result, err := r.processDir()
-	if err != nil {
-		warnColor.Printf("处理目录时发生错误: %v\n", err)
-	}
-
-	// ========= 显示结果 =========
-	successCount := len(result.successJobs)
-	failedCount := len(result.failedJobs)
-	accessErrCount := len(result.accessErrors)
-
-	if successCount == 0 && failedCount == 0 && accessErrCount == 0 {
-		warnColor.Printf("指定目录内没有找到 %s 视频文件\n", r.Extension)
-	}
-
-	if successCount > 0 {
-		for inputPath, convertResult := range result.successJobs {
-			successColor.Printf("转换成功: %s -> %s\n", inputPath, convertResult.OutputPath)
-			warnColor.Printf("  └─ %s\n", convertResult.StatusMessage) // 显示转换状态详情
-		}
-	}
-
-	if failedCount > 0 {
-		for path, err := range result.failedJobs {
-			errorColor.Printf("转换失败: %s -> %v\n", path, err)
-		}
-	}
-
-	if accessErrCount > 0 {
-		for path, err := range result.accessErrors {
-			warnColor.Printf("访问错误: %s -> %v\n", path, err)
-		}
-	}
-
-	fmt.Printf("\n处理完毕...\n")
-
-	// ========= 删除逻辑 =========
-	if len(result.successJobs) > 0 {
-		if r.AutoRemove || askForConfirmation("是否删除已成功转换的原始文件?") {
-			for filePath := range result.successJobs {
-				if err := os.Remove(filePath); err != nil {
-					errorColor.Printf("删除失败 -> %s 错误: %v\n", filePath, err)
-				} else {
-					warnColor.Printf("已删除 -> %s\n", filePath)
-				}
-			}
-		} else {
-			warnColor.Printf("\n操作取消, 保留所有原始文件\n")
-		}
-	}
-
-	return nil
-}
-
-// processDir 遍历指定目录及其子目录, 转换所有指定扩展名的文件
-func (r *Runner) processDir() (*processResult, error) {
+// processBatch 遍历指定目录及其子目录, 转换所有指定扩展名的文件
+func (r *Runner) processBatch() (*processResult, error) {
 	stats := &processResult{
 		successJobs:  make(map[string]*ConvertResult),
 		failedJobs:   make(map[string]error),
@@ -152,16 +95,29 @@ func (r *Runner) processWorker(jobs <-chan string, procInfoChan chan<- processin
 	}
 }
 
-// processProducer 遍历目录, 将找到的指定扩展名文件路径发送到 jobs 通道, 并通过 procInfoChan 报告访问错误
+// processProducer 遍历 InputPaths, 过滤掉目录和 MP4 文件, 将有效文件发送到 jobs 通道
 func (r *Runner) processProducer(jobs chan<- string, procInfoChan chan<- processingInfo) {
-	filepath.WalkDir(r.InputPath, func(path string, d os.DirEntry, err error) error {
+	for _, path := range r.InputPaths {
+		// 1. 检查路径状态
+		info, err := os.Stat(path)
 		if err != nil {
 			procInfoChan <- processingInfo{vidPath: path, accessError: err}
-			return nil
+			continue
 		}
-		if !d.IsDir() && strings.EqualFold(filepath.Ext(path), r.Extension) {
-			jobs <- path // 将任务路径发送给 Worker
+
+		// 2. 如果是目录，提示跳过
+		if info.IsDir() {
+			warnColor.Printf("跳过目录: %s\n", path)
+			continue
 		}
-		return nil
-	})
+
+		// 3. 如果是 mp4 后缀，提示跳过
+		if strings.EqualFold(filepath.Ext(path), ".mp4") {
+			warnColor.Printf("跳过 MP4 文件: %s\n", path)
+			continue
+		}
+
+		// 4. 发送任务
+		jobs <- path
+	}
 }
