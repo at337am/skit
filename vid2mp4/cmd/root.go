@@ -32,7 +32,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner(conv)
 
 	var cmd = &cobra.Command{
-		Use:          "vid2mp4 <files...>",
+		Use:          "vid2mp4 <videos...>",
 		Short:        "Convert video to MP4",
 		SilenceUsage: true,                  // 禁止 在出现错误时, 自动打印用法信息 Usage
 		Args:         cobra.MinimumNArgs(1), // 最少 1 个位置参数
