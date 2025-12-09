@@ -18,5 +18,6 @@ install-all:
             echo "  💡 警告：目录 '$dir' 未找到。跳过。"; \
         fi; \
     done
-    @echo "🎉 install-all 已完成"
+    @echo ""
+    @echo "Done."
 
