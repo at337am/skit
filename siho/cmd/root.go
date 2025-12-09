@@ -23,7 +23,7 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:   "siho <file>...",
+		Use:   "siho <files...>",
 		Short: "Securely encrypt and decrypt files with ease",
 
 		SilenceUsage: true,                  // 禁止 在出现错误时, 自动打印用法信息 Usage
