@@ -61,7 +61,7 @@ func newRootCmd() *cobra.Command {
 // checkEnv 检查系统环境
 func checkEnv() error {
 	if _, err := exec.LookPath("go"); err != nil {
-		return errors.New("Go 环境未找到")
+		return errors.New("go 环境未找到")
 	}
 	return nil
 }
