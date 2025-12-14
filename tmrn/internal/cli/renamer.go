@@ -15,8 +15,8 @@ type renameResult struct {
 	finalPath    string
 }
 
-// renameFiles 时间排序重命名
-func (r *Runner) renameFiles(files []fileInfo) ([]renameResult, error) {
+// renameFilesByModTime 时间排序重命名
+func (r *Runner) renameFilesByModTime(files []fileInfo) ([]renameResult, error) {
 	if len(files) == 0 {
 		return nil, errors.New("没有找到匹配的文件")
 	}
@@ -83,8 +83,8 @@ func (r *Runner) renameFiles(files []fileInfo) ([]renameResult, error) {
 	return results, nil
 }
 
-// randomizeFiles 随机前缀
-func (r *Runner) randomizeFiles(files []fileInfo) ([]renameResult, error) {
+// renameFilesWithRandomPrefix 随机前缀
+func (r *Runner) renameFilesWithRandomPrefix(files []fileInfo) ([]renameResult, error) {
 	if len(files) == 0 {
 		return nil, errors.New("没有找到匹配的文件")
 	}

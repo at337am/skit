@@ -21,7 +21,7 @@ type Runner struct {
 	DirPath     string
 	FileExt     string
 	ReverseSort bool
-	RandomMode  bool
+	ShuffleMode  bool
 }
 
 // NewRunner 构造函数 (也可以在这里设置参数默认值)
@@ -102,12 +102,12 @@ func (r *Runner) Run() error {
 	// 3. 重命名文件
 	var results []renameResult
 
-	if r.RandomMode {
+	if r.ShuffleMode {
 		// 随机模式, 添加随机前缀
-		results, err = r.randomizeFiles(files)
+		results, err = r.renameFilesWithRandomPrefix(files)
 	} else {
 		// 默认模式, 时间排序逻辑
-		results, err = r.renameFiles(files)
+		results, err = r.renameFilesByModTime(files)
 	}
 
 	if err != nil {
