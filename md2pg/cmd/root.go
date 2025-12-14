@@ -46,7 +46,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "o", "", "Specify the directory path to store the output results")
+	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "o", "", "Specify the output directory")
 
 	return cmd
 }

@@ -24,7 +24,7 @@ func newRootCmd() *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:          "tmrn <dir>",
-		Short:        "批量重命名文件 (按照文件修改时间排序)",
+		Short:        "Batch rename files based on modification time",
 		SilenceUsage: true,
 		Args:         cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -40,9 +40,9 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVarP(&runner.ReverseSort, "reverse", "r", false, "启用从晚到早排序 (默认为从早到晚)")
-	cmd.Flags().BoolVarP(&runner.ShuffleMode, "shuffle", "s", false, "随机打乱文件名 (添加4位随机前缀)")
-	cmd.Flags().StringVarP(&runner.FileExt, "extension", "e", "", "要处理的文件格式")
+	cmd.Flags().BoolVarP(&runner.ReverseSort, "reverse", "r", false, "Sort from newest to oldest")
+	cmd.Flags().BoolVarP(&runner.ShuffleMode, "shuffle", "s", false, "Randomly shuffle filenames by adding a 4-digit random prefix")
+	cmd.Flags().StringVarP(&runner.FileExt, "extension", "e", "", "Specify the file extension to process")
 
 	return cmd
 }

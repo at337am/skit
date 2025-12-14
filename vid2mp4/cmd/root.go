@@ -54,8 +54,8 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVarP(&runner.AutoRemove, "yes", "y", false, "自动删除转换后的视频文件")
-	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "o", "", "指定输出目录, 默认与视频路径同级")
+	cmd.Flags().BoolVarP(&runner.AutoRemove, "yes", "y", false, "Automatically confirm deletion of the converted video files")
+	cmd.Flags().StringVarP(&runner.OutputDir, "output-dir", "o", "", "Specify the output directory")
 
 	return cmd
 }

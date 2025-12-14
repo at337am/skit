@@ -26,7 +26,7 @@ func newRootCmd() *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:   "dirhash <path1> <path2>",
-		Short: "比较两个文件或目录的内容是否一致 (SHA-256)",
+		Short: "Compare file or directory contents using SHA-256 hashes",
 
 		SilenceUsage: true,               // 禁止 在出现错误时, 自动打印用法信息 Usage
 		Args:         cobra.ExactArgs(2), // 必须为 2 个位置参数
