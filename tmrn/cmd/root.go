@@ -44,5 +44,8 @@ func newRootCmd() *cobra.Command {
 	cmd.Flags().BoolVarP(&runner.ShuffleMode, "shuffle", "s", false, "Randomly shuffle filenames by adding a 4-digit random prefix")
 	cmd.Flags().StringVarP(&runner.FileExt, "extension", "e", "", "Specify the file extension to process")
 
+	// 这两个选项是互斥的
+	cmd.MarkFlagsMutuallyExclusive("shuffle", "reverse")
+
 	return cmd
 }
