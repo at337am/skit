@@ -49,7 +49,7 @@ func (r *Runner) Validate() error {
 	}
 
 	if absPath == homeDir {
-		return errors.New("tmrn 不允许在用户主目录 ~ 中运行")
+		return errors.New("禁止对 HOME 目录执行 tmrn")
 	}
 
 	dirInfo, err := os.Stat(dirPath)
