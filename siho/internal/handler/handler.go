@@ -47,7 +47,7 @@ func (h *Handler) HandleEncrypt() error {
 		return outputPath, err
 	}
 
-	return h.processFiles("加密", encryptFile)
+	return h.processFiles("Encrypted", encryptFile)
 }
 
 // HandleDecrypt 统一处理文件和目录的解密逻辑
@@ -66,7 +66,7 @@ func (h *Handler) HandleDecrypt() error {
 		err := h.crypt.Decrypt(inputPath, outputPath)
 		return outputPath, err
 	}
-	return h.processFiles("解密", decryptFile)
+	return h.processFiles("Decrypted", decryptFile)
 }
 
 // processFiles 使用 worker pool 并发处理文件
@@ -128,7 +128,7 @@ func (h *Handler) processFiles(opName string, processFunc func(string) (string, 
 			errorColor.Printf("Failed -> %s\n", result.inputPath)
 			continue
 		}
-		successColor.Printf("已%s -> %s\n", opName, result.outputPath)
+		successColor.Printf("%s -> %s\n", opName, result.outputPath)
 	}
 
 	if len(errs) > 0 {
@@ -152,7 +152,7 @@ func collectFilesToProcess(paths []string) ([]string, error) {
 		}
 
 		if info.IsDir() {
-			warnColor.Printf("跳过目录: %s\n", path)
+			warnColor.Printf("Skipping directory: %s\n", path)
 			continue
 		}
 		files = append(files, path)
