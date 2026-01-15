@@ -41,7 +41,8 @@ func newRootCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&runner.SourceLang, "source", "s", "auto", "Source language (e.g. 'en', 'zh-CN', 'auto')")
 	cmd.Flags().StringVarP(&runner.TargetLang, "target", "t", "zh-CN", "Target language (e.g. 'en', 'zh-CN')")
-	cmd.Flags().StringVarP(&runner.Proxy, "proxy", "p", "http://127.0.0.1:2080", "Proxy address; pass an empty string if no proxy is used")
+	// cmd.Flags().StringVarP(&runner.Proxy, "proxy", "p", "http://127.0.0.1:2080", "Proxy address; pass an empty string if no proxy is used")
+	cmd.Flags().StringVarP(&runner.Proxy, "proxy", "p", "", "Proxy address; pass an empty string if no proxy is used")
 
 	return cmd
 }
