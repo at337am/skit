@@ -23,13 +23,17 @@ func newRootCmd() *cobra.Command {
 	runner := cli.NewRunner()
 
 	var cmd = &cobra.Command{
-		Use:          "tmrn <dir>",
+		Use:          "tmrn [dir]",
 		Short:        "Batch rename files based on modification time",
 		SilenceUsage: true,
-		Args:         cobra.ExactArgs(1),
+		Args:         cobra.MaximumNArgs(1), // 最多 1 个位置参数
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// 必选项: 路径参数
-			runner.DirPath = args[0]
+			// 如果提供了参数则使用参数, 否则默认为当前目录
+			if len(args) == 0 {
+				runner.DirPath = "."
+			} else {
+				runner.DirPath = args[0]
+			}
 
 			// 校验选项参数
 			if err := runner.Validate(); err != nil {

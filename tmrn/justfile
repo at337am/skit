@@ -1,7 +1,5 @@
 default:
-    @rm -rf ./data
-    @rsync -avh --progress ./bak/data .
-    @echo "重置完成"
+    @just --list
 
 cp:
     fd -e go -x sh -c 'echo "===== {} ====="; cat {}; echo' | wl-copy
