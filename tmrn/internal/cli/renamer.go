@@ -45,7 +45,18 @@ func (r *Runner) renameFilesByModTime(files []fileInfo) ([]renameResult, error) 
 	plan := make([]renameOp, numFiles)
 
 	for i, file := range files {
-		finalName := fmt.Sprintf(formatTemplate, i+1) + file.ext
+		// 生成序号部分
+		numberPart := fmt.Sprintf(formatTemplate, i+1)
+
+		var finalName string
+		if r.NamePrefix != "" {
+			// 如果有前缀, 格式为: 前缀_序号.后缀
+			finalName = fmt.Sprintf("%s_%s%s", r.NamePrefix, numberPart, file.ext)
+		} else {
+			// 默认格式: 序号.后缀
+			finalName = numberPart + file.ext
+		}
+
 		plan[i] = renameOp{
 			originalPath: file.path,
 			tmpPath:      file.path + tmpSuffix,

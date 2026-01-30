@@ -20,8 +20,9 @@ var (
 type Runner struct {
 	DirPath     string
 	FileExt     string
+	NamePrefix  string // 用于存储自定义文件名前缀
 	ReverseSort bool
-	ShuffleMode  bool
+	ShuffleMode bool
 }
 
 // NewRunner 构造函数 (也可以在这里设置参数默认值)
@@ -66,6 +67,14 @@ func (r *Runner) Validate() error {
 	// 确保文件格式以点号开头
 	if r.FileExt != "" {
 		r.FileExt = "." + strings.TrimPrefix(r.FileExt, ".")
+	}
+
+	// 校验自定义前缀是否包含非法字符
+	if r.NamePrefix != "" {
+		const invalidChars = `/\:*?"'<>|`
+		if strings.ContainsAny(r.NamePrefix, invalidChars) {
+			return fmt.Errorf("自定义前缀包含非法字符 -> '%s' (禁止使用: %s)", r.NamePrefix, invalidChars)
+		}
 	}
 
 	return nil
