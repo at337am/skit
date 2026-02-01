@@ -47,7 +47,7 @@ func (r *Runner) Run() error {
 	h := handler.NewHandler(tran)
 
 	// 定义提示符, 并使用 color 包生成带 ANSI escape code 的彩色字符串
-	modePrompt := fmt.Sprintf("[%s -> %s]> ", r.SourceLang, r.TargetLang)
+	modePrompt := fmt.Sprintf("[%s -> %s] > ", r.SourceLang, r.TargetLang)
 	coloredPrompt := warnColor.Sprint(modePrompt)
 
 	// 创建 readline 实例, 并将彩色提示符传入配置
