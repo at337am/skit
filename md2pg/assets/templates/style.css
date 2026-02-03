@@ -15,19 +15,13 @@ html {
     padding: 0;
 }
 
-/* 选中文本时 */
-::selection {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
 body {
-    font-family: "Noto Sans", "Noto Sans CJK SC", sans-serif;
-    color: #333;
+    font-family: monospace, sans-serif;
+    color: #f4f4f5;
     line-height: 1.6;
     max-width: 50vw;
     margin: 20px auto;
-    background-color: #f0f0f0;
+    background-color: #1f2126;
     overflow-wrap: break-word;
 }
 
@@ -53,7 +47,6 @@ h6 {
 
 h1 {
     font-size: 2.441rem;
-    text-align: center;
 }
 h2 {
     font-size: 1.953rem;
@@ -76,7 +69,7 @@ p {
 }
 
 a {
-    color: #7b5fa0;
+    color: #38bdf8;
     text-decoration: none;
 }
 a:hover {
@@ -97,19 +90,19 @@ ol li:last-child {
 }
 
 code {
-    background-color: #d6d6d6;
+    background-color: #3e4248;
     font-size: 0.85rem;
     padding: 0.15rem 0.3rem;
-    border-radius: 6px;
-    color: #222;
+    border-radius: 0px;
+    color: #d1d1d6;
 }
 
 pre {
-    background-color: #d6d6d6;
+    background-color: #3e4248;
     padding: 0.5rem 1rem;
     margin-bottom: 1rem;
     overflow: visible;
-    border-radius: 6px;
+    border-radius: 0px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
 }
@@ -119,7 +112,7 @@ pre code {
     border: none;
     padding: 0;
     white-space: pre-wrap;
-    color: #222;
+    color: #d1d1d6;
     word-break: break-word;
 }
 
@@ -147,28 +140,6 @@ em {
     font-style: italic;
 }
 
-.code-block-wrapper {
-    position: relative;
-}
-
-.copy-button {
-    position: absolute;
-    top: 0.4rem;
-    right: 0.4rem;
-    font-size: 0.85rem;
-    padding: 0.25rem 0.5rem;
-    color: #333;
-    background-color: #f0f0f0;
-    border: 1px solid #d6d6d6;
-    border-radius: 6px;
-    cursor: pointer;
-    opacity: 0;
-}
-
-.copy-button.copied {
-    background-color: #d6d6d6;
-}
-
 /* --- 目录样式 --- */
 #toc-container {
     position: fixed;
@@ -177,14 +148,15 @@ em {
     transform: translateY(-50%);
     min-width: 15vw;
     max-width: 20vw;
-    max-height: 80vh;
+    max-height: 95vh;
     overflow-y: auto;
-    background-color: #f0f0f0;
-    border: 1px solid #d6d6d6;
-    border-radius: 6px;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    background-color: #1f2126;
+    border: 2px solid #3e4248;
+    border-radius: 0px;
+
     font-size: 0.85rem;
+    padding: 1rem;
     z-index: 100;
     display: none;
 }
@@ -207,15 +179,15 @@ em {
 }
 
 #toc-list a {
-    color: #333;
+    color: #f4f4f5;
     text-decoration: none;
     display: block;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 0px;
 }
 
 #toc-list a:hover {
-    background-color: #d6d6d6;
+    background-color: #3e4248;
     text-decoration: none;
 }
 

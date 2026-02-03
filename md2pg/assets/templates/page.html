@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}}</title>
-    <style>
-{{.CSS}}
-    </style>
+    <style>{{.CSS}}</style>
 </head>
 <body>
-    <div class="markdown-body">
-    <h1 id="title">{{.Title}}</h1>
-{{.Body}}
-    </div>
+    <div class="markdown-body">{{.Body}}</div>
 
     <div id="toc-container">
         <ul id="toc-list"></ul>
@@ -20,36 +15,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- 复制按钮逻辑 (未改变) ---
-            const preBlocks = document.querySelectorAll('pre');
-            preBlocks.forEach(pre => {
-                const codeElement = pre.querySelector('code');
-                if (!codeElement) return;
-
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-block-wrapper';
-                pre.parentNode.insertBefore(wrapper, pre);
-                wrapper.appendChild(pre);
-
-                const button = document.createElement('button');
-                button.textContent = '复制';
-                button.className = 'copy-button';
-                wrapper.appendChild(button);
-
-                wrapper.addEventListener('mouseenter', () => button.style.opacity = '1');
-                wrapper.addEventListener('mouseleave', () => {
-                    button.style.opacity = '0';
-                    button.classList.remove('copied');
-                });
-
-                button.addEventListener('click', () => {
-                    navigator.clipboard.writeText(codeElement.innerText || codeElement.textContent).then(() => {
-                        button.classList.add('copied');
-                    }).catch(err => console.error('无法复制文本: ', err));
-                });
-            });
-
-            // --- 目录生成逻辑 (已修改) ---
+            // --- 目录生成逻辑 ---
             const contentBody = document.querySelector('.markdown-body');
             const tocList = document.getElementById('toc-list');
             const headings = contentBody.querySelectorAll('h1, h2, h3');
@@ -61,7 +27,7 @@
                 // 第 1 步: 预处理，找出所有有效的TOC标题及其级别
                 headings.forEach((heading, index) => {
                     const text = heading.textContent.trim();
-                    
+
                     // 跳过主标题 (与原逻辑相同)
                     if (heading.tagName === 'H1' && heading.parentElement === contentBody && index === 0) {
                         return;
@@ -70,7 +36,7 @@
                     if (!text) {
                         return;
                     }
-                    
+
                     tocHeadings.push({
                         element: heading,
                         level: parseInt(heading.tagName.substring(1)),
@@ -78,7 +44,7 @@
                         originalIndex: index // 保存原始索引用于生成唯一ID
                     });
                 });
-                
+
                 // 如果过滤后没有可用于目录的标题，则隐藏目录并退出
                 if (tocHeadings.length === 0) {
                     if (tocContainer) {
